@@ -36,6 +36,8 @@ Số cảnh báo mỗi lần chạy (3 lần), trước → sau khi sửa prompt
 
 PET dataset: 12/12 văn bản sinh được sơ đồ.
 
+Kiểm tra log tự động (replay log trên sơ đồ, `verify.ts`): đặt hàng, song song, vòng lặp đều hợp lệ 50/50 và 200/200 hồ sơ ở cả "Việc suôn sẻ" lẫn "Nhiều trục trặc".
+
 ## Chi phí 1000 truy vấn
 
 | Model | Chi phí |

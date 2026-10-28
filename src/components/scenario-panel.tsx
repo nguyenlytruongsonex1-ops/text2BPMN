@@ -15,6 +15,7 @@ import {
   type RunResult,
   type SimGraph,
 } from "@/lib/bpmn/sim";
+import { verifyLog, type VerifyResult } from "@/lib/bpmn/verify";
 
 type Mode = Preset | "custom";
 
@@ -81,6 +82,7 @@ export function ScenarioPanel({
   const [cases, setCases] = useState(200);
   const [runs, setRuns] = useState<RunResult[]>([]);
   const [latest, setLatest] = useState<RunResult | null>(null);
+  const [check, setCheck] = useState<VerifyResult | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
   function adopt(next: SimGraph, nextMode: Mode, keepCustom: boolean) {
@@ -118,6 +120,7 @@ export function ScenarioPanel({
       setProbability(base.probability);
       setRuns([]);
       setLatest(null);
+      setCheck(null);
       setMessage(null);
     } catch {
       setGraph(null);
@@ -151,6 +154,9 @@ export function ScenarioPanel({
     if (!graph) return;
     const scenario = mode === "edge" ? t.edge : mode === "custom" ? t.custom : t.happy;
     const result = simulate(graph, { scenario, cases, minutes, rework, probability });
+    const verified = verifyLog(graph, result.rows);
+    if (verified.errors.length) console.error(`${t.verifyLabel} (${scenario})`, verified.errors);
+    setCheck(verified);
     setLatest(result);
     setRuns((current) => {
       const index = current.findIndex((item) => item.scenario === scenario);
@@ -319,6 +325,27 @@ export function ScenarioPanel({
         <div className="flex flex-col gap-3 border-t border-line pt-4">
           {latest.completed < latest.cases ? (
             <p className="text-sm text-muted">{fill(t.completedOf, { done: latest.completed, cases: latest.cases })}</p>
+          ) : null}
+          {check ? (
+            check.errors.length ? (
+              <div role="alert" className="flex flex-col gap-1 rounded-sm border border-ink px-3 py-2 text-sm text-ink">
+                <p className="font-medium">
+                  {t.verifyLabel}: {fill(t.verifyBad, { valid: check.valid, total: check.total, bad: check.errors.length })}
+                </p>
+                <ul className="list-disc pl-5">
+                  {check.errors.slice(0, 20).map((error) => (
+                    <li key={error.caseId}>
+                      {error.caseId}: {error.message}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-sm" data-testid="verify-ok">
+                <span className="font-medium">{t.verifyLabel}: </span>
+                {fill(t.verifyOk, { valid: check.valid, total: check.total })}
+              </p>
+            )
           ) : null}
           <p className="text-sm">
             <span className="font-medium">{t.avgLabel} </span>
