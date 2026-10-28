@@ -42,7 +42,20 @@ export type Semantics = {
   customerRole?: string; // lane whose tasks are done by the case's own customer
   customers?: string[];
   minutes?: Record<string, number>; // optional per-task duration by label
+  rework?: Record<string, number>; // task label -> repeat probability; others never repeat
 };
+
+const REWORK_RE = /(kiểm tra|soạn|duyệt|xử lý|sửa|check|review|prepare|process|fix)/i;
+
+function customerLane(lane: string) {
+  return /(khách|khach|customer|client|^nhân viên$|^employee$|ứng viên|applicant)/i.test(lane.trim());
+}
+
+function reworkTasks(graph: SimGraph) {
+  const lanes = graph.nodes.filter((n) => WORK.has(n.kind)).map((n) => n.role);
+  const cust = lanes.find(customerLane);
+  return graph.nodes.filter((n) => WORK.has(n.kind) && n.role !== cust && REWORK_RE.test(n.label));
+}
 
 const SYSTEM_RE = /(hệ thống|he thong|system|website|app)/i;
 
@@ -51,7 +64,7 @@ export function defaultSemantics(graph: SimGraph): Semantics {
   const sem: Semantics = { roles: {}, unlimited: [] };
   for (const lane of lanes) {
     // requester lane (customer, or the employee/applicant who files the case) = per-case entity
-    if (!sem.customerRole && /(khách|khach|customer|client|^nhân viên$|^employee$|ứng viên|applicant)/i.test(lane.trim())) {
+    if (!sem.customerRole && customerLane(lane)) {
       const prefix = /(khách|khach)/i.test(lane) ? "Khách" : /(customer|client)/i.test(lane) ? "Customer" : lane;
       sem.customerRole = lane;
       sem.customers = ["A", "B", "C"].map((x) => `${prefix} ${x}`);
@@ -64,6 +77,7 @@ export function defaultSemantics(graph: SimGraph): Semantics {
       sem.roles[lane] = Array.from({ length: size }, (_, i) => `${lane} - NV${i + 1}`);
     }
   }
+  sem.rework = Object.fromEntries(reworkTasks(graph).map((n) => [n.label, 0.03]));
   return sem;
 }
 
@@ -332,8 +346,9 @@ export function applyPreset(graph: SimGraph, preset: Preset) {
   for (const node of graph.nodes) {
     const base = defaultMinutes(node.kind);
     minutes[node.id] = preset === "edge" && WORK.has(node.kind) ? Math.round(base * 1.25) : base;
-    rework[node.id] = WORK.has(node.kind) ? (preset === "happy" ? 2 : 20) : 0;
+    rework[node.id] = 0;
   }
+  for (const node of reworkTasks(graph)) rework[node.id] = preset === "happy" ? 3 : 10;
   const outs = new Map<string, SimFlow[]>();
   for (const flow of graph.flows) {
     const list = outs.get(flow.source) ?? [];
@@ -348,7 +363,7 @@ export function applyPreset(graph: SimGraph, preset: Preset) {
       probability[flow.id] = Math.round((weights[index] ?? 0) * 100);
     });
   }
-  return { minutes, rework, probability };
+  return { minutes, rework, probability, arrival: preset === "happy" ? 10 : 7 };
 }
 
 function quantile(sorted: number[], p: number) {
@@ -371,6 +386,7 @@ export function simulate(
     rework: Record<string, number>;
     probability: Record<string, number>;
     semantics?: Semantics;
+    arrival?: number; // mean minutes between case arrivals (exponential)
   },
 ): RunResult {
   const sem = input.semantics ?? defaultSemantics(graph);
@@ -399,6 +415,7 @@ export function simulate(
       rework: input.rework,
       probability: input.probability,
       sem,
+      arrival: input.arrival,
     }),
   );
   const random = mulberry32(seed);
@@ -438,6 +455,9 @@ export function simulate(
     agenda.splice(lo, 0, item);
     states[item.c]!.open += 1;
   };
+  const arrivals = mulberry32(seed ^ 0x9e3779b9);
+  const meanGap = Math.max(0.1, input.arrival ?? CASE_GAP_MS / 60_000) * 60_000;
+  let arrive = BASE_MS;
   const customers = sem.customers?.length ? sem.customers : [];
   for (let index = 0; index < cases; index += 1) {
     states.push({
@@ -450,7 +470,8 @@ export function simulate(
       first: Number.POSITIVE_INFINITY,
       last: 0,
     });
-    for (const id of roots) push({ c: index, id, time: BASE_MS + index * CASE_GAP_MS });
+    if (index > 0) arrive += Math.round((-Math.log(1 - arrivals()) * meanGap) / 60_000) * 60_000;
+    for (const id of roots) push({ c: index, id, time: arrive });
   }
   // Pick who does the step: the case's customer, an unlimited role, or the earliest-free member.
   const assign = (cs: CaseState, role: string, ready: number) => {
@@ -486,7 +507,10 @@ export function simulate(
     if (node.kind !== "xor" && node.kind !== "and" && node.kind !== "or") {
       let repeats = 0;
       let again = true;
-      const rework = Math.max(0, Math.min(80, input.rework[node.id] ?? 0)) / 100;
+      const allowed = sem.rework ? node.label in sem.rework : true;
+      const rework = allowed
+        ? Math.max(0, Math.min(80, input.rework[node.id] ?? (sem.rework?.[node.label] ?? 0) * 100)) / 100
+        : 0;
       const work = WORK.has(node.kind);
       const slot = work ? assign(cs, node.role, time) : { who: "", at: time, hold: false };
       time = slot.at;

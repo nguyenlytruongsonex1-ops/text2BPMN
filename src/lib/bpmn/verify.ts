@@ -125,6 +125,7 @@ export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Semantics
     }
     if (!message) message = resourceIssue(graph, raw, semantics ?? defaultSemantics(graph));
     if (!message) message = busy.get(caseId) ?? "";
+    if (!message) message = repeatIssue(graph, raw, semantics ?? defaultSemantics(graph));
     if (message) errors.push({ caseId, message });
     else valid += 1;
   }
@@ -170,4 +171,31 @@ function overlaps(graph: SimGraph, rows: LogRow[], sem: Semantics) {
     }
   }
   return out;
+}
+
+// A step may appear twice in a case only if it is marked as rework or sits on a BPMN loop.
+function repeatIssue(graph: SimGraph, rows: LogRow[], sem: Semantics): string {
+  const next = new Map<string, string[]>();
+  for (const f of graph.flows) next.set(f.source, [...(next.get(f.source) ?? []), f.target]);
+  const onLoop = (id: string) => {
+    const seen = new Set<string>();
+    const stack = [...(next.get(id) ?? [])];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      if (cur === id) return true;
+      if (seen.has(cur)) continue;
+      seen.add(cur);
+      stack.push(...(next.get(cur) ?? []));
+    }
+    return false;
+  };
+  const count = new Map<string, number>();
+  for (const row of rows) count.set(row.activity, (count.get(row.activity) ?? 0) + 1);
+  for (const [label, n] of count) {
+    if (n < 2 || (sem.rework && label in sem.rework) || !sem.rework) continue;
+    const ids = graph.nodes.filter((node) => node.label === label).map((node) => node.id);
+    if (ids.length > 1 || ids.some(onLoop)) continue;
+    return `«${label}» lặp ${n} lần nhưng không phải bước làm lại và không nằm trong vòng lặp`;
+  }
+  return "";
 }

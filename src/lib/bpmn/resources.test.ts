@@ -62,4 +62,32 @@ describe("semantic resources", () => {
     pair[1].resource = pair[0].resource;
     assert.match(verifyLog(graph, rows3).errors.map((e) => e.message).join(), /trùng giờ/);
   });
+
+  it("repeats only rework tasks, never customer tasks", () => {
+    const sem = defaultSemantics(graph);
+    assert.ok("Kiểm tra tồn kho" in sem.rework! && "Soạn hàng" in sem.rework!);
+    assert.ok(!("Nhận hàng" in sem.rework!) && !("Đặt hàng trên website" in sem.rework!));
+    const result = simulate(graph, { scenario: "x", cases: 300, ...applyPreset(graph, "edge") });
+    const seen = new Map<string, number>();
+    for (const r of result.rows) seen.set(r.caseId + r.activity, (seen.get(r.caseId + r.activity) ?? 0) + 1);
+    const repeated = new Set([...seen].filter(([, n]) => n > 1).map(([k]) => k.slice(4)));
+    assert.ok(repeated.size > 0);
+    for (const label of repeated) assert.ok(label in sem.rework!, label);
+  });
+
+  it("flags a non-rework step repeated outside a loop", () => {
+    const rows = run("happy", 5).rows.map((r) => ({ ...r }));
+    const i = rows.findIndex((r) => r.activity === "Nhận hàng");
+    const r = rows[i]!;
+    rows.splice(i + 1, 0, { ...r, start: r.end, end: r.end });
+    assert.match(verifyLog(graph, rows).errors.map((e) => e.message).join(), /lặp 2 lần/);
+  });
+
+  it("uses random but deterministic arrivals", () => {
+    const starts = run("happy", 30).rows.filter((r) => r.activity === "Bắt đầu").map((r) => Date.parse(r.start + "Z"));
+    const gaps = starts.slice(1).map((t, i) => t - starts[i]!);
+    assert.ok(new Set(gaps).size > 3);
+    assert.ok(gaps.every((g) => g >= 0));
+    assert.deepEqual(run("happy", 30).rows, run("happy", 30).rows);
+  });
 });
