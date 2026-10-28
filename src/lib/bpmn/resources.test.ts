@@ -65,7 +65,7 @@ describe("semantic resources", () => {
 
   it("repeats only rework tasks, never customer tasks", () => {
     const sem = defaultSemantics(graph);
-    assert.ok("Kiểm tra tồn kho" in sem.rework! && "Soạn hàng" in sem.rework!);
+    assert.ok("Soạn hàng" in sem.rework! && !("Kiểm tra tồn kho" in sem.rework!));
     assert.ok(!("Nhận hàng" in sem.rework!) && !("Đặt hàng trên website" in sem.rework!));
     const result = simulate(graph, { scenario: "x", cases: 300, ...applyPreset(graph, "edge") });
     const seen = new Map<string, number>();
@@ -89,5 +89,42 @@ describe("semantic resources", () => {
     assert.ok(new Set(gaps).size > 3);
     assert.ok(gaps.every((g) => g >= 0));
     assert.deepEqual(run("happy", 30).rows, run("happy", 30).rows);
+  });
+});
+
+// LLM-style model from Son's bug: no end events, paths just stop after the last task.
+const NO_END = `<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+  <bpmn:process id="P" name="Đơn">
+    <bpmn:laneSet>
+      <bpmn:lane id="L1" name="Khách hàng"><bpmn:flowNodeRef>s</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="L2" name="Hệ thống"><bpmn:flowNodeRef>b</bpmn:flowNodeRef><bpmn:flowNodeRef>g</bpmn:flowNodeRef><bpmn:flowNodeRef>n</bpmn:flowNodeRef></bpmn:lane>
+      <bpmn:lane id="L3" name="Kho"><bpmn:flowNodeRef>c</bpmn:flowNodeRef></bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="s" name="Đặt hàng"/>
+    <bpmn:serviceTask id="b" name="Kiểm tra tồn kho"/>
+    <bpmn:exclusiveGateway id="g" name="Còn hàng?"/>
+    <bpmn:userTask id="c" name="Soạn hàng"/>
+    <bpmn:serviceTask id="n" name="Báo lỗi cho khách"/>
+    <bpmn:sequenceFlow id="f1" sourceRef="s" targetRef="b"/>
+    <bpmn:sequenceFlow id="f2" sourceRef="b" targetRef="g"/>
+    <bpmn:sequenceFlow id="f3" sourceRef="g" targetRef="c" name="Có"/>
+    <bpmn:sequenceFlow id="f4" sourceRef="g" targetRef="n" name="Hết hàng"/>
+  </bpmn:process>
+</definitions>`;
+
+describe("bug: model without end events + partial semantics JSON", () => {
+  it("verifies all cases", () => {
+    const g = parseBpmn(NO_END);
+    const sem = {
+      roles: { "Hệ thống": ["Hệ thống"], Kho: ["Kho - NV1", "Kho - NV2"] },
+      unlimited: ["Hệ thống"],
+      rework: { "Kiểm tra tồn kho": 0.03, "Soạn hàng": 0.03 },
+    };
+    const r = simulate(g, { scenario: "x", cases: 50, ...applyPreset(g, "happy"), semantics: sem });
+    assert.equal(r.completed, 50);
+    const v = verifyLog(g, r.rows, sem);
+    assert.equal(v.errors.length, 0, JSON.stringify(v.errors.slice(0, 2)));
+    assert.ok(!("Kiểm tra tồn kho" in defaultSemantics(g).rework!));
   });
 });

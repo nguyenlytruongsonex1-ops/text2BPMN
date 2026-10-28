@@ -54,10 +54,26 @@ function customerLane(lane: string) {
 function reworkTasks(graph: SimGraph) {
   const lanes = graph.nodes.filter((n) => WORK.has(n.kind)).map((n) => n.role);
   const cust = lanes.find(customerLane);
-  return graph.nodes.filter((n) => WORK.has(n.kind) && n.role !== cust && REWORK_RE.test(n.label));
+  return graph.nodes.filter(
+    (n) => WORK.has(n.kind) && n.role !== cust && !SYSTEM_RE.test(n.role) && n.role !== "Unassigned" && REWORK_RE.test(n.label),
+  );
 }
 
 const SYSTEM_RE = /(hệ thống|he thong|system|website|app)/i;
+
+// Fill every key the user's JSON leaves out from the lane-derived defaults.
+export function resolveSemantics(graph: SimGraph, given?: Partial<Semantics> | null): Semantics {
+  const base = defaultSemantics(graph);
+  if (!given) return base;
+  return {
+    roles: { ...base.roles, ...(given.roles ?? {}) },
+    unlimited: given.unlimited ?? base.unlimited,
+    customerRole: given.customerRole ?? base.customerRole,
+    customers: given.customers ?? base.customers,
+    minutes: given.minutes ?? base.minutes,
+    rework: given.rework ?? base.rework,
+  };
+}
 
 export function defaultSemantics(graph: SimGraph): Semantics {
   const lanes = [...new Set(graph.nodes.filter((n) => WORK.has(n.kind)).map((n) => n.role))];
@@ -389,7 +405,8 @@ export function simulate(
     arrival?: number; // mean minutes between case arrivals (exponential)
   },
 ): RunResult {
-  const sem = input.semantics ?? defaultSemantics(graph);
+  const sem = resolveSemantics(graph, input.semantics);
+  const hasEnd = graph.nodes.some((n) => n.kind === "end");
   const freeAt = new Map<string, number>(); // person -> time they become free
   const cases = Math.max(1, Math.min(2000, Math.round(input.cases) || 1));
   const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
@@ -558,7 +575,7 @@ export function simulate(
     push({ c: token.c, id: flow.target, time });
   }
   for (const cs of states) {
-    const complete = cs.sawEnd && cs.open === 0 && [...cs.waits.values()].every((b) => !b.length);
+    const complete = (cs.sawEnd || !hasEnd) && cs.open === 0 && [...cs.waits.values()].every((b) => !b.length);
     if (complete) completed += 1;
     caseMinutes.push({
       caseId: cs.caseId,

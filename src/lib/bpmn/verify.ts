@@ -1,4 +1,4 @@
-import { defaultSemantics, type LogRow, type Semantics, type SimFlow, type SimGraph } from "./sim.ts";
+import { resolveSemantics, type LogRow, type Semantics, type SimFlow, type SimGraph } from "./sim.ts";
 
 export type VerifyError = { caseId: string; message: string };
 export type VerifyResult = { total: number; valid: number; errors: VerifyError[] };
@@ -23,7 +23,9 @@ function key(state: State) {
 // Replays each case of a simulated log on the model (token game). Gateways are silent:
 // XOR/OR pass one token to exactly one branch, AND splits to all branches and joins only
 // when every incoming branch has arrived. A step may repeat right after itself (rework).
-export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Semantics): VerifyResult {
+export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Partial<Semantics>): VerifyResult {
+  const sem = resolveSemantics(graph, semantics);
+  const hasEnd = graph.nodes.some((n) => n.kind === "end");
   const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
   const outs = new Map<string, SimFlow[]>();
   const ins = new Map<string, number>();
@@ -70,7 +72,7 @@ export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Semantics
   const byCase = new Map<string, LogRow[]>();
   for (const row of rows) byCase.set(row.caseId, [...(byCase.get(row.caseId) ?? []), row]);
 
-  const busy = overlaps(graph, rows, semantics ?? defaultSemantics(graph));
+  const busy = overlaps(graph, rows, sem);
   const errors: VerifyError[] = [];
   let valid = 0;
   for (const [caseId, raw] of byCase) {
@@ -120,12 +122,12 @@ export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Semantics
       const endSeen = events.some((event) =>
         graph.nodes.some((n) => n.kind === "end" && n.label === event.row.activity),
       );
-      if (!endSeen) message = `không tới điểm kết thúc (dừng sau «${last?.id ?? "?"}»)`;
+      if (hasEnd && !endSeen) message = `không tới điểm kết thúc (dừng sau «${last?.id ?? "?"}»)`;
       else if (!done) message = "còn nhánh chưa hoàn tất khi kết thúc (thiếu bước song song?)";
     }
-    if (!message) message = resourceIssue(graph, raw, semantics ?? defaultSemantics(graph));
+    if (!message) message = resourceIssue(graph, raw, sem);
     if (!message) message = busy.get(caseId) ?? "";
-    if (!message) message = repeatIssue(graph, raw, semantics ?? defaultSemantics(graph));
+    if (!message) message = repeatIssue(graph, raw, sem);
     if (message) errors.push({ caseId, message });
     else valid += 1;
   }
