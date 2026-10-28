@@ -14,33 +14,65 @@ export type StudioResult = {
   error: string | null;
 };
 
-const SYSTEM = `Output text IR for basic BPMN only. No XML, no markdown, no explanation. Keep labels in the language of the description.
+const SYSTEM = `Output text IR for basic BPMN only. No XML, no markdown, no explanation. Keep labels in the language of the description: English text gives English labels, even though the example below is Vietnamese.
 
 Bạn chỉ xuất IR văn bản cho BPMN cơ bản. Không XML, không markdown, không giải thích.
 
-Mỗi dòng một lệnh:
+Mỗi dòng một lệnh (<ma> là mã bước do bạn đặt, KHÔNG viết chữ "id"):
 process "Tên quy trình"
 lane "Vai trò"
-start id "Nhãn" lane "Vai trò"
-end id "Nhãn" lane "Vai trò"
-task id "Nhãn" lane "Vai trò"
-user id "Nhãn" lane "Vai trò"
-service id "Nhãn" lane "Vai trò"
-xor id "Câu hỏi?" lane "Vai trò"
-and id "Nhãn" lane "Vai trò"
-id -> id "Nhãn nhánh"
+start <ma> "Nhãn" lane "Vai trò"
+end <ma> "Nhãn" lane "Vai trò"
+task <ma> "Nhãn" lane "Vai trò"
+user <ma> "Nhãn" lane "Vai trò"
+service <ma> "Nhãn" lane "Vai trò"
+xor <ma> "Câu hỏi?" lane "Vai trò"
+and <ma> "Nhãn" lane "Vai trò"
+<ma_nguon> -> <ma_dich> "Nhãn nhánh"
 
 Quy tắc:
 - Nhiều quy trình trong một văn bản thì mỗi quy trình bắt đầu bằng một dòng process.
-- id chỉ gồm chữ cái không dấu, số và _. Nhãn giữ ngôn ngữ của người dùng, đặt trong ngoặc kép. Thoát " bằng \\".
+- Mã bước là duy nhất, chỉ gồm chữ không dấu, số và _ (ví dụ s1, kiem_tra, g_dat). Nhãn giữ ngôn ngữ của người dùng, đặt trong ngoặc kép. Thoát " bằng \\".
+- Mỗi dòng bước PHẢI bắt đầu bằng loại (start/end/task/user/service/xor/and), không bao giờ bắt đầu bằng mã.
+- Khai báo mọi bước trước, rồi mới viết luồng. Luồng chỉ dùng mã đã khai báo, không dùng nhãn, không nối một bước với chính nó.
 - user: việc do người làm. service: việc do hệ thống làm. task: việc chung.
-- xor khi rẽ loại trừ. Mỗi nhánh xor phải có luồng ra và nhãn ngắn.
-- and khi làm song song. Nhánh and phải hội tụ ở một and khác trước khi đi tiếp.
-- Mỗi quy trình có một start và ít nhất một end.
+- xor khi rẽ loại trừ: mỗi luồng ra khỏi xor phải có nhãn điều kiện ngắn ("Có", "Không"...). Các nhánh xor gặp lại nhau thì hội tụ bằng một xor khác, KHÔNG bao giờ bằng and.
+- and khi làm song song: các nhánh and phải hội tụ ở một and khác trước khi đi tiếp. Luồng của and không cần nhãn.
+- Lặp lại/làm lại: nối luồng từ nhánh xor quay về bước trước đó (không cần gateway mới).
+- Đúng một start. Một end, trừ khi các nhánh thật sự kết thúc khác nhau.
 - Có vai trò thì khai báo lane và gắn lane cho từng bước. Không có vai trò thì bỏ lane.
 - Không thêm bước ngoài mô tả. Tối đa 30 bước mỗi quy trình.
+- Nhãn theo ngôn ngữ của mô tả (mô tả tiếng Anh thì nhãn tiếng Anh). Mã bước vẫn không dấu.
 - Mơ hồ thì chọn cách diễn giải ngắn nhất.
-- Chỉ in IR.`;
+
+Ví dụ:
+process "Duyệt đơn nghỉ phép"
+lane "Nhân viên"
+lane "Quản lý"
+start s1 "Có nhu cầu nghỉ" lane "Nhân viên"
+user nop_don "Nộp đơn nghỉ phép" lane "Nhân viên"
+and g_song "Tách song song" lane "Quản lý"
+user xem_lich "Xem lịch nhóm" lane "Quản lý"
+service tra_phep "Tra số ngày phép" lane "Quản lý"
+and g_hop "Gộp song song" lane "Quản lý"
+xor g_duyet "Duyệt đơn?" lane "Quản lý"
+user sua_don "Sửa đơn" lane "Nhân viên"
+service ghi_nhan "Ghi nhận ngày nghỉ" lane "Quản lý"
+end e1 "Xong" lane "Quản lý"
+s1 -> nop_don
+nop_don -> g_song
+g_song -> xem_lich
+g_song -> tra_phep
+xem_lich -> g_hop
+tra_phep -> g_hop
+g_hop -> g_duyet
+g_duyet -> ghi_nhan "Đồng ý"
+g_duyet -> sua_don "Cần sửa"
+sua_don -> nop_don
+ghi_nhan -> e1
+
+Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start.
+Chỉ in IR.`;
 
 function asText(content: unknown): string {
   if (typeof content === "string") return content;
@@ -193,6 +225,18 @@ export async function buildFromDescription(text: string, langInput?: unknown): P
     if (repaired.ok) {
       ir = extractIr(repaired.text);
       translated = await translatePreferPython(ir, lang);
+    }
+  }
+  const warnings = translated.ok ? translated.diagrams.flatMap((d) => d.warnings) : [];
+  if (warnings.length) {
+    const fixed = await askModel(note.repair(warnings.slice(0, 8).join("\n"), ir, text), REPAIR_MODEL, lang);
+    if (fixed.ok) {
+      const fixedIr = extractIr(fixed.text);
+      const retry = await translatePreferPython(fixedIr, lang);
+      if (retry.ok && retry.diagrams.flatMap((d) => d.warnings).length < warnings.length) {
+        ir = fixedIr;
+        translated = retry;
+      }
     }
   }
   return pack(ir, translated);
