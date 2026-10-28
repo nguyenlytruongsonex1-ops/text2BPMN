@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.output/
+.vercel/
+.tanstack/
+.env
+.env.*
+!.env.example
+*.zip
+screenshots/
+__pycache__/
+*.pyc
+.project_id
+.grok/
+artifacts/

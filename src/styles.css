@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Be Vietnam Pro", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --color-paper: #f3f1ec;
+  --color-sheet: #fffcf8;
+  --color-ink: #1c1b19;
+  --color-muted: #6f6a62;
+  --color-line: #e4dfd6;
+  --color-ink-soft: #2e2c28;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+}
+
+.diagram-frame {
+  height: min(70vh, 40rem);
+  min-height: 22rem;
+}
+
+.diagram-frame .djs-container,
+.diagram-frame .djs-container > svg {
+  background: var(--color-sheet);
+}
+
+.diagram-frame .djs-palette,
+.diagram-frame .djs-context-pad {
+  border-color: var(--color-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagram-frame,
+  button {
+    transition: none;
+  }
+}
