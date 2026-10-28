@@ -23,6 +23,8 @@ XAI_API_KEY=khóa_từ_console.x.ai
 
 Rồi chạy lại `npm run dev`. Không có khóa, nút vẽ báo AI chưa sẵn sàng. Dán danh sách bước và bấm dịch lại vẫn dùng được.
 
+Tùy chọn: đặt `OPENROUTER_API_KEY` (và `OPENROUTER_MODEL`, mặc định `qwen/qwen3.5-9b`) để gọi qua OpenRouter thay cho xAI.
+
 ## Kiểm thử phần dịch và giả lập
 
 ```bash

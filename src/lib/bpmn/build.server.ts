@@ -101,14 +101,19 @@ async function askModel(
   lang: Lang,
 ): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
   const note = API_COPY[lang];
-  const apiKey = process.env.XAI_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = openRouterKey || process.env.XAI_API_KEY;
+  const endpoint = openRouterKey
+    ? "https://openrouter.ai/api/v1/chat/completions"
+    : "https://api.x.ai/v1/chat/completions";
+  if (openRouterKey) model = process.env.OPENROUTER_MODEL || "qwen/qwen3.5-9b";
   if (!apiKey) {
     return { ok: false, error: note.aiDown };
   }
 
   let response: Response;
   try {
-    response = await fetch("https://api.x.ai/v1/chat/completions", {
+    response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,6 +124,7 @@ async function askModel(
         model,
         temperature: 0.2,
         max_tokens: 1800,
+        ...(openRouterKey ? { reasoning: { enabled: false } } : {}),
         messages: [
           { role: "system", content: SYSTEM },
           { role: "user", content: user },
