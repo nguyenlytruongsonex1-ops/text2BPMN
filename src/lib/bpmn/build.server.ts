@@ -1,6 +1,7 @@
 import { translatePreferPython, type EngineResult } from "./engine.server";
 import { asLang, type Lang } from "./lang";
 import type { DiagramFile } from "./translate";
+import { checkIr } from "./ircheck";
 
 const DRAFT_MODEL = "grok-4.20-0309-non-reasoning";
 const REPAIR_MODEL = "grok-4.5";
@@ -12,6 +13,7 @@ export type StudioResult = {
   diagrams: DiagramFile[];
   combinedXml: string;
   error: string | null;
+  attempts?: number[]; // error count of each LLM attempt (first draft, then retries)
 };
 
 const SYSTEM = `Output text IR for basic BPMN only. No XML, no markdown, no explanation. Keep labels in the language of the description: English text gives English labels, even though the example below is Vietnamese.
@@ -38,12 +40,43 @@ Quy tắc:
 - user: việc do người làm. service: việc do hệ thống làm. task: việc chung.
 - xor khi rẽ loại trừ: mỗi luồng ra khỏi xor phải có nhãn điều kiện ngắn ("Có", "Không"...). Các nhánh xor gặp lại nhau thì hội tụ bằng một xor khác, KHÔNG bao giờ bằng and.
 - and khi làm song song: các nhánh and phải hội tụ ở một and khác trước khi đi tiếp. Luồng của and không cần nhãn.
+- Mọi mã dùng trong luồng PHẢI được khai báo trước là một bước hoặc gateway (không nối tới mã chưa khai báo).
+- Chỉ gateway mới rẽ nhánh: task/user/service/start có TỐI ĐA một luồng ra. Muốn rẽ thì nối bước đó tới một xor/and.
+- xor = chọn ĐÚNG MỘT nhánh (loại trừ, ví dụ "Còn hàng?" -> "Có"/"Hết hàng"). Việc làm song song (ví dụ soạn hàng và xuất hóa đơn cùng lúc) phải dùng and tách + and gộp, KHÔNG dùng xor.
 - Lặp lại/làm lại: nối luồng từ nhánh xor quay về bước trước đó (không cần gateway mới).
 - Đúng một start. MỌI nhánh phải đi tới một end: mỗi luồng ra của xor/and (kể cả nhánh lỗi như "Báo lỗi cho khách", "Hủy đơn") cuối cùng phải nối tới một end. Không để bước nào cụt (bước không phải end mà không có luồng ra). Nhánh kết thúc khác nhau thì dùng end riêng có nhãn rõ.
 - Có vai trò thì khai báo lane và gắn lane cho từng bước. Không có vai trò thì bỏ lane.
 - Không thêm bước ngoài mô tả. Tối đa 30 bước mỗi quy trình.
 - Nhãn theo ngôn ngữ của mô tả (mô tả tiếng Anh thì nhãn tiếng Anh). Mã bước vẫn không dấu.
 - Mơ hồ thì chọn cách diễn giải ngắn nhất.
+
+Ví dụ 2 (xor chọn một nhánh, bên trong nhánh "Có" là and song song):
+process "Xử lý đơn hàng"
+lane "Hệ thống"
+lane "Kho"
+lane "Kế toán"
+start s1 "Nhận đơn" lane "Hệ thống"
+service kiem_tra "Kiểm tra tồn kho" lane "Hệ thống"
+xor g_con "Còn hàng?" lane "Hệ thống"
+and g_tach "Tách song song" lane "Hệ thống"
+user soan "Soạn hàng" lane "Kho"
+user hoa_don "Xuất hóa đơn" lane "Kế toán"
+and g_gop "Gộp song song" lane "Hệ thống"
+user giao "Giao hàng" lane "Kho"
+service bao_loi "Báo hết hàng cho khách" lane "Hệ thống"
+end e1 "Đã giao" lane "Kho"
+end e2 "Đã hủy" lane "Hệ thống"
+s1 -> kiem_tra
+kiem_tra -> g_con
+g_con -> g_tach "Có"
+g_con -> bao_loi "Hết hàng"
+g_tach -> soan
+g_tach -> hoa_don
+soan -> g_gop
+hoa_don -> g_gop
+g_gop -> giao
+giao -> e1
+bao_loi -> e2
 
 Ví dụ:
 process "Duyệt đơn nghỉ phép"
@@ -75,7 +108,7 @@ sua_don -> nop_don
 ghi_nhan -> e1
 bao_tu_choi -> e2
 
-Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start; mọi nhánh (kể cả nhánh lỗi/hủy) kết thúc ở end; không bước nào ngoài end thiếu luồng ra.
+Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start; mọi nhánh (kể cả nhánh lỗi/hủy) kết thúc ở end; không bước nào ngoài end thiếu luồng ra; mọi mã trong luồng đã khai báo; bước không phải gateway có tối đa một luồng ra; nhánh xor không gộp ở and (song song thì dùng and tách/gộp).
 Chỉ in IR.`;
 
 function asText(content: unknown): string {
@@ -119,6 +152,8 @@ const API_COPY = {
     draft: (text: string) => `Mô tả quy trình:\n${text}`,
     repair: (error: string, ir: string, text: string) =>
       `IR sau không dịch được.\nLỗi: ${error}\n\nIR:\n${ir}\n\nMô tả gốc:\n${text}\n\nXuất lại toàn bộ IR đã sửa. Chỉ IR.`,
+    fix: (errors: string[], ir: string, text: string) =>
+      `Sửa các lỗi sau:\n${errors.map((e) => `- ${e}`).join("\n")}\n\nIR hiện tại:\n${ir}\n\nMô tả gốc:\n${text}\n\nXuất lại toàn bộ IR đã sửa. Chỉ IR.`,
   },
   en: {
     aiDown: "AI is not available in this environment. You can still paste IR and translate it again.",
@@ -128,6 +163,8 @@ const API_COPY = {
     draft: (text: string) => `Process description:\n${text}`,
     repair: (error: string, ir: string, text: string) =>
       `The IR below did not translate.\nError: ${error}\n\nIR:\n${ir}\n\nOriginal description:\n${text}\n\nOutput the full corrected IR. IR only.`,
+    fix: (errors: string[], ir: string, text: string) =>
+      `Fix these errors:\n${errors.map((e) => `- ${e}`).join("\n")}\n\nCurrent IR:\n${ir}\n\nOriginal description:\n${text}\n\nOutput the full corrected IR. IR only.`,
   },
 } as const;
 
@@ -231,17 +268,25 @@ export async function buildFromDescription(text: string, langInput?: unknown): P
       translated = await translatePreferPython(ir, lang);
     }
   }
-  const warnings = translated.ok ? translated.diagrams.flatMap((d) => d.warnings) : [];
-  if (warnings.length) {
-    const fixed = await askModel(note.repair(warnings.slice(0, 8).join("\n"), ir, text), REPAIR_MODEL, lang);
-    if (fixed.ok) {
-      const fixedIr = extractIr(fixed.text);
-      const retry = await translatePreferPython(fixedIr, lang);
-      if (retry.ok && retry.diagrams.flatMap((d) => d.warnings).length < warnings.length) {
-        ir = fixedIr;
-        translated = retry;
-      }
+  const problems = (candidate: string, result: EngineResult) => [
+    ...checkIr(candidate),
+    ...(result.ok ? result.diagrams.flatMap((d) => d.warnings) : [result.error]),
+  ];
+  let errors = problems(ir, translated);
+  const attempts = [errors.length];
+  // Up to 2 retries with the exact error list; keep the version with the fewest errors.
+  for (let attempt = 0; attempt < 2 && errors.length; attempt += 1) {
+    const fixed = await askModel(note.fix(errors.slice(0, 12), ir, text), REPAIR_MODEL, lang);
+    if (!fixed.ok) break;
+    const fixedIr = extractIr(fixed.text);
+    const retry = await translatePreferPython(fixedIr, lang);
+    const retryErrors = problems(fixedIr, retry);
+    attempts.push(retryErrors.length);
+    if (retry.ok && retryErrors.length < errors.length) {
+      ir = fixedIr;
+      translated = retry;
+      errors = retryErrors;
     }
   }
-  return pack(ir, translated);
+  return { ...pack(ir, translated), attempts };
 }

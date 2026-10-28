@@ -136,12 +136,18 @@ export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Partial<S
 
 const WORKS = new Set(["task", "user", "service"]);
 
+// Several steps may share a label in different lanes: use the row's own role when it matches one of them.
+function roleFor(graph: SimGraph, row: LogRow): string | undefined {
+  const roles = graph.nodes.filter((n) => WORKS.has(n.kind) && n.label === row.activity).map((n) => n.role);
+  if (!roles.length) return undefined;
+  return row.role && roles.includes(row.role) ? row.role : roles[0];
+}
+
 // Resource checks: performer belongs to the step's role pool; customer steps done by the case's customer.
 function resourceIssue(graph: SimGraph, rows: LogRow[], sem: Semantics): string {
-  const roleOf = new Map(graph.nodes.filter((n) => WORKS.has(n.kind)).map((n) => [n.label, n.role]));
   const customer = rows[0]?.customer ?? "";
   for (const row of rows) {
-    const role = roleOf.get(row.activity);
+    const role = roleFor(graph, row);
     if (role === undefined) continue;
     if (sem.customerRole && role === sem.customerRole) {
       if (row.resource !== customer) return `«${row.activity}» do ${row.resource} làm, nhưng khách của hồ sơ là ${customer || "?"}`;
@@ -155,10 +161,9 @@ function resourceIssue(graph: SimGraph, rows: LogRow[], sem: Semantics): string 
 
 // One person cannot do two activities at once (customers and unlimited roles are exempt).
 function overlaps(graph: SimGraph, rows: LogRow[], sem: Semantics) {
-  const roleOf = new Map(graph.nodes.filter((n) => WORKS.has(n.kind)).map((n) => [n.label, n.role]));
   const byPerson = new Map<string, LogRow[]>();
   for (const row of rows) {
-    const role = roleOf.get(row.activity);
+    const role = roleFor(graph, row);
     if (role === undefined || !row.resource || role === sem.customerRole || sem.unlimited?.includes(role)) continue;
     byPerson.set(row.resource, [...(byPerson.get(row.resource) ?? []), row]);
   }

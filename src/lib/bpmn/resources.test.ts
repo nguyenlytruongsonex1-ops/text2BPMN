@@ -166,3 +166,90 @@ describe("end events safety net", () => {
     assert.equal(d.warnings.filter((w) => /Nhánh không có điểm kết thúc/.test(w)).length, 2);
   });
 });
+
+describe("IR structural check", () => {
+  it("flags undeclared refs, task branching, xor rejoining at and", async () => {
+    const { checkIr } = await import("./ircheck.ts");
+    const bad = `process "Đơn"
+start s1 "Đặt" 
+service k "Kiểm tra tồn kho"
+xor g "Còn hàng?"
+service a "Soạn hàng"
+service b "Xuất hóa đơn"
+and j "Gộp"
+service d "Giao hàng"
+end e1 "Xong"
+s1 -> k
+k -> g "Có"
+k -> g_het "Hết"
+g -> a
+g -> b
+a -> j
+b -> j
+j -> d
+d -> e1`;
+    const errs = checkIr(bad).join("\n");
+    assert.match(errs, /mã «g_het» chưa được khai báo/);
+    assert.match(errs, /«Kiểm tra tồn kho» \(k\) có 2 luồng ra/);
+    assert.match(errs, /xor «Còn hàng\?» \(g\).*and «Gộp» \(j\)/);
+  });
+
+  it("accepts a correct xor + and split/join model", async () => {
+    const { checkIr } = await import("./ircheck.ts");
+    const good = `process "Đơn"
+start s1 "Đặt"
+service k "Kiểm tra tồn kho"
+xor g "Còn hàng?"
+and t "Tách"
+service a "Soạn hàng"
+service b "Xuất hóa đơn"
+and j "Gộp"
+service d "Giao hàng"
+service n "Báo lỗi"
+end e1 "Xong"
+end e2 "Hủy"
+s1 -> k
+k -> g
+g -> t "Có"
+g -> n "Hết"
+t -> a
+t -> b
+a -> j
+b -> j
+j -> d
+d -> e1
+n -> e2`;
+    assert.deepEqual(checkIr(good), []);
+  });
+});
+
+describe("same label in two lanes", () => {
+  it("checks the performer against the row's own lane", async () => {
+    const { translateIr } = await import("./translate.ts");
+    const ir = `process "Tuyển"
+lane "Tuyển dụng"
+lane "Nhân sự"
+start s "Nộp" lane "Tuyển dụng"
+xor g "Đạt?" lane "Tuyển dụng"
+user a "Gửi thư từ chối" lane "Tuyển dụng"
+user p "Phỏng vấn" lane "Nhân sự"
+xor h "Trúng?" lane "Nhân sự"
+user b "Gửi thư từ chối" lane "Nhân sự"
+user o "Gửi offer" lane "Nhân sự"
+end e1 "Loại 1" lane "Tuyển dụng"
+end e2 "Loại 2" lane "Nhân sự"
+end e3 "Nhận" lane "Nhân sự"
+s -> g
+g -> a "Không"
+g -> p "Có"
+a -> e1
+p -> h
+h -> b "Không"
+h -> o "Có"
+b -> e2
+o -> e3`;
+    const g = parseBpmn((translateIr(ir, "vi") as { diagrams: { xml: string }[] }).diagrams[0]!.xml);
+    const r = simulate(g, { scenario: "x", cases: 60, ...applyPreset(g, "edge") });
+    assert.deepEqual(verifyLog(g, r.rows).errors, []);
+  });
+});
