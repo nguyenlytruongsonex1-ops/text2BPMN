@@ -341,3 +341,18 @@ it("split: features drive applyPreset and simulation still verifies", () => {
     assert.equal(verifyLog(g, run.rows, sem as never).valid, 20);
   }
 });
+
+it("bad scenario: same branch odds as good, but longer mean case duration", () => {
+  const g = parseBpmn(ORDER_BPMN);
+  const sem = defaultSemantics(g);
+  const good = applyPreset(g, "happy", sem);
+  const bad = applyPreset(g, "edge", sem);
+  assert.deepEqual(bad.probability, good.probability);
+  assert.ok(bad.arrival < good.arrival);
+  const run = (p: typeof good, s: string) => simulate(g, { scenario: s, cases: 100, ...p, semantics: sem });
+  const rg = run(good, "good");
+  const rb = run(bad, "bad");
+  assert.ok(rb.avgMinutes > rg.avgMinutes * 1.1, `${rb.avgMinutes} vs ${rg.avgMinutes}`);
+  assert.equal(verifyLog(g, rg.rows, sem).valid, 100);
+  assert.equal(verifyLog(g, rb.rows, sem).valid, 100);
+});

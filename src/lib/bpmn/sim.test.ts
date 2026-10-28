@@ -57,16 +57,17 @@ describe("bpmn simulation", () => {
     assert.equal(graph.flows.find((flow) => flow.id === "f3")?.label, "Yes");
   });
 
-  it("sends happy flow down the yes branch and edge flow down the no branch", () => {
+  it("keeps the same branch odds (mostly yes) in happy and edge scenarios", () => {
     const graph = parseBpmn(LEAVE);
     const happyParams = applyPreset(graph, "happy");
     const edgeParams = applyPreset(graph, "edge");
     const happy = simulate(graph, { scenario: "Happy", cases: 200, ...happyParams });
     const edge = simulate(graph, { scenario: "Edge", cases: 200, ...edgeParams });
     const yes = happy.branches.find((branch) => branch.label === "Yes");
-    const no = edge.branches.find((branch) => branch.label === "No");
+    const edgeYes = edge.branches.find((branch) => branch.label === "Yes");
     assert.ok(yes && yes.share >= 80);
-    assert.ok(no && no.share >= 60);
+    assert.ok(edgeYes && edgeYes.share >= 80);
+    assert.deepEqual(edgeParams.probability, happyParams.probability);
     assert.equal(happy.completed, 200);
     assert.match(toCsv(happy.rows), /^Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type/);
     assert.match(toXes(happy.rows, "Happy"), /xes.version="1.0"/);

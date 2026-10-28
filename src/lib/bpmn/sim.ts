@@ -375,10 +375,11 @@ export function applyPreset(graph: SimGraph, preset: Preset, sem?: Partial<Seman
     for (const node of graph.nodes) {
       const p = WORK.has(node.kind) ? sem.rework[node.label] : undefined;
       if (p === undefined) continue;
-      rework[node.id] = preset === "happy" ? Math.round(p * 100) : Math.min(50, Math.max(10, Math.round(p * 300)));
+      // bad = 3x good rework, capped at 50%
+      rework[node.id] = preset === "happy" ? Math.round(p * 100) : Math.min(50, Math.round(p * 300));
     }
   } else {
-    for (const node of reworkTasks(graph)) rework[node.id] = preset === "happy" ? 3 : 10;
+    for (const node of reworkTasks(graph)) rework[node.id] = preset === "happy" ? 3 : 9;
   }
   const outs = new Map<string, SimFlow[]>();
   for (const flow of graph.flows) {
@@ -390,19 +391,20 @@ export function applyPreset(graph: SimGraph, preset: Preset, sem?: Partial<Seman
   const labels = new Map(graph.nodes.map((node) => [node.id, node.label]));
   for (const [source, list] of outs) {
     const kind = kinds.get(source);
-    const hinted = kind === "xor" && preset === "happy" ? sem?.branches?.[labels.get(source) ?? ""] : undefined;
+    // Same branch odds in both scenarios: bad degrades only via time, arrivals and rework.
+    const hinted = kind === "xor" ? sem?.branches?.[labels.get(source) ?? ""] : undefined;
     const fromHint = hinted ? list.map((flow) => hinted[labels.get(flow.target) ?? ""] ?? 0) : null;
     const weights =
       fromHint && fromHint.some((w) => w > 0)
         ? fromHint.map((w) => w / fromHint.reduce((a, b) => a + b, 0))
         : kind === "xor" || kind === "or"
-          ? presetWeights(list, preset)
+          ? presetWeights(list, "happy")
           : list.map(() => 1 / list.length);
     list.forEach((flow, index) => {
       probability[flow.id] = Math.round((weights[index] ?? 0) * 100);
     });
   }
-  return { minutes, rework, probability, arrival: preset === "happy" ? 10 : 7 };
+  return { minutes, rework, probability, arrival: preset === "happy" ? 10 : 6 };
 }
 
 function quantile(sorted: number[], p: number) {
@@ -447,18 +449,20 @@ export function simulate(
   const roots = (starts.length ? starts : graph.nodes.filter((node) => (incoming.get(node.id) ?? 0) === 0)).map(
     (node) => node.id,
   );
+  // Common random numbers: the seed ignores scenario, minutes, rework and arrival rate, and every case has its
+  // own branch/rework streams, so good vs bad runs of the same model differ only by the degraded parameters.
   const seed = hashSeed(
     JSON.stringify({
-      scenario: input.scenario,
+      graph: graph.nodes.map((n) => n.id),
       cases,
-      minutes: input.minutes,
-      rework: input.rework,
       probability: input.probability,
-      sem,
-      arrival: input.arrival,
+      roles: sem.roles,
+      customers: sem.customers,
     }),
   );
-  const random = mulberry32(seed);
+  const caseRng = (index: number, salt: number) => mulberry32((seed ^ Math.imul(index + 1, 0x9e3779b1) ^ salt) >>> 0);
+  const branchRng: (() => number)[] = [];
+  const reworkRng: (() => number)[] = [];
   const rows: LogRow[] = [];
   const caseMinutes: { caseId: string; minutes: number; complete: boolean }[] = [];
   const workMs = new Map<string, number>();
@@ -502,7 +506,7 @@ export function simulate(
   for (let index = 0; index < cases; index += 1) {
     states.push({
       caseId: String(index + 1).padStart(4, "0"),
-      customer: customers.length ? customers[Math.floor(random() * customers.length)]! : "",
+      customer: customers.length ? customers[Math.floor(caseRng(index, 0x51)() * customers.length)]! : "",
       waits: new Map(),
       open: 0,
       sawEnd: false,
@@ -510,6 +514,8 @@ export function simulate(
       first: Number.POSITIVE_INFINITY,
       last: 0,
     });
+    branchRng.push(caseRng(index, 0x0b));
+    reworkRng.push(caseRng(index, 0x2e));
     if (index > 0) arrive += Math.round((-Math.log(1 - arrivals()) * meanGap) / 60_000) * 60_000;
     for (const id of roots) push({ c: index, id, time: arrive });
   }
@@ -577,7 +583,7 @@ export function simulate(
         cs.last = Math.max(cs.last, end);
         time = end;
         repeats += 1;
-        again = work && repeats < 5 && random() < rework;
+        again = work && repeats < 5 && reworkRng[token.c]!() < rework;
       }
       if (slot.hold) freeAt.set(slot.who, time);
     }
@@ -588,7 +594,7 @@ export function simulate(
       continue;
     }
     const weights = outs.map((flow) => Math.max(0, input.probability[flow.id] ?? flow.probability * 100));
-    const choice = outs.length === 1 ? 0 : pick(weights, random);
+    const choice = outs.length === 1 ? 0 : pick(weights, branchRng[token.c]!);
     const flow = outs[choice];
     if (!flow) continue;
     if (node.kind === "xor" || node.kind === "or") {
