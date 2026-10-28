@@ -3,6 +3,8 @@ import { asLang, type Lang } from "./lang";
 import type { DiagramFile } from "./translate";
 import { checkIr, mergeStarts } from "./ircheck";
 import { SYSTEMS, detectLang } from "./prompts";
+import type { Semantics } from "./sim";
+import type { FeatureResult } from "./features.server";
 
 const DRAFT_MODEL = "grok-4.20-0309-non-reasoning";
 const REPAIR_MODEL = "grok-4.5";
@@ -15,6 +17,8 @@ export type StudioResult = {
   combinedXml: string;
   error: string | null;
   attempts?: number[]; // error count of each LLM attempt (first draft, then retries)
+  semantics?: Partial<Semantics> | null; // call 2: simulation features (null = use defaults)
+  features?: FeatureResult["report"];
 };
 
 function asText(content: unknown): string {
@@ -74,10 +78,11 @@ const API_COPY = {
   },
 } as const;
 
-async function askModel(
+export async function askModel(
   user: string,
   model: string,
   lang: Lang,
+  system: string = SYSTEMS[lang],
 ): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
   const note = API_COPY[lang];
   const openRouterKey = process.env.OPENROUTER_API_KEY;
@@ -105,7 +110,7 @@ async function askModel(
         max_tokens: 1800,
         ...(openRouterKey ? { reasoning: { enabled: false } } : {}),
         messages: [
-          { role: "system", content: SYSTEMS[lang] },
+          { role: "system", content: system },
           { role: "user", content: user },
         ],
       }),
@@ -207,5 +212,12 @@ export async function buildFromDescription(text: string, langInput?: unknown): P
       );
     }
   }
-  return { ...pack(ir, translated), attempts };
+  const result: StudioResult = { ...pack(ir, translated), attempts };
+  if (result.ok) {
+    const { extractFeatures } = await import("./features.server");
+    const features = await extractFeatures(text, ir, lang);
+    result.semantics = features.semantics;
+    result.features = features.report;
+  }
+  return result;
 }

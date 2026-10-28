@@ -4,7 +4,7 @@ import type { Lang } from "./lang";
 const KINDS = new Set(["start", "end", "task", "user", "service", "xor", "and", "or"]);
 const GATEWAYS = new Set(["xor", "and", "or"]);
 
-type Step = { id: string; kind: string; label: string; lane: string | null };
+export type Step = { id: string; kind: string; label: string; lane: string | null };
 
 const MSG = {
   vi: {
@@ -37,7 +37,7 @@ const MSG = {
   },
 } as const;
 
-function parse(ir: string) {
+export function parseIr(ir: string) {
   const steps = new Map<string, Step>();
   const flows: { src: string; dst: string; line: number }[] = [];
   ir.split(/\r?\n/).forEach((raw, index) => {
@@ -56,7 +56,7 @@ function parse(ir: string) {
 
 export function checkIr(ir: string, lang: Lang = "vi"): string[] {
   const m = MSG[lang];
-  const { steps, flows } = parse(ir);
+  const { steps, flows } = parseIr(ir);
   const errors: string[] = [];
   const name = (id: string) => `«${steps.get(id)?.label ?? id}» (${id})`;
   const outs = new Map<string, string[]>();
@@ -125,7 +125,7 @@ export function checkIr(ir: string, lang: Lang = "vi"): string[] {
 
 // Safety net: several start events -> one start + xor; old starts become tasks.
 export function mergeStarts(ir: string, lang: Lang = "vi"): string {
-  const { steps } = parse(ir);
+  const { steps } = parseIr(ir);
   const starts = [...steps.values()].filter((s) => s.kind === "start");
   if (starts.length < 2) return ir;
   const lane = starts[0]!.lane ? ` lane "${starts[0]!.lane}"` : "";

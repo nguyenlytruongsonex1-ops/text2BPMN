@@ -43,6 +43,8 @@ export type Semantics = {
   customers?: string[];
   minutes?: Record<string, number>; // optional per-task duration by label
   rework?: Record<string, number>; // task label -> repeat probability; others never repeat
+  branches?: Record<string, Record<string, number>>; // xor label -> target label -> probability (0..1), good scenario
+  bottlenecks?: string[]; // task labels that slow down most in the bad scenario
 };
 
 const REWORK_RE = /(kiểm tra|soạn|duyệt|xử lý|sửa|check|review|prepare|process|fix)/i;
@@ -72,6 +74,8 @@ export function resolveSemantics(graph: SimGraph, given?: Partial<Semantics> | n
     customers: given.customers ?? base.customers,
     minutes: given.minutes ?? base.minutes,
     rework: given.rework ?? base.rework,
+    branches: given.branches ?? base.branches,
+    bottlenecks: given.bottlenecks ?? base.bottlenecks,
   };
 }
 
@@ -355,16 +359,27 @@ export function presetWeights(flows: SimFlow[], preset: Preset) {
   });
 }
 
-export function applyPreset(graph: SimGraph, preset: Preset) {
+// sem (optional, e.g. from the LLM feature call) supplies minutes, rework, branch odds and bottlenecks by label.
+export function applyPreset(graph: SimGraph, preset: Preset, sem?: Partial<Semantics> | null) {
   const minutes: Record<string, number> = {};
   const rework: Record<string, number> = {};
   const probability: Record<string, number> = {};
+  const slow = new Set(sem?.bottlenecks ?? []);
   for (const node of graph.nodes) {
-    const base = defaultMinutes(node.kind);
-    minutes[node.id] = preset === "edge" && WORK.has(node.kind) ? Math.round(base * 1.25) : base;
+    const base = (WORK.has(node.kind) ? sem?.minutes?.[node.label] : undefined) ?? defaultMinutes(node.kind);
+    const factor = preset === "edge" && WORK.has(node.kind) ? (slow.has(node.label) ? 2.5 : 1.25) : 1;
+    minutes[node.id] = Math.max(1, Math.round(base * factor));
     rework[node.id] = 0;
   }
-  for (const node of reworkTasks(graph)) rework[node.id] = preset === "happy" ? 3 : 10;
+  if (sem?.rework) {
+    for (const node of graph.nodes) {
+      const p = WORK.has(node.kind) ? sem.rework[node.label] : undefined;
+      if (p === undefined) continue;
+      rework[node.id] = preset === "happy" ? Math.round(p * 100) : Math.min(50, Math.max(10, Math.round(p * 300)));
+    }
+  } else {
+    for (const node of reworkTasks(graph)) rework[node.id] = preset === "happy" ? 3 : 10;
+  }
   const outs = new Map<string, SimFlow[]>();
   for (const flow of graph.flows) {
     const list = outs.get(flow.source) ?? [];
@@ -372,9 +387,17 @@ export function applyPreset(graph: SimGraph, preset: Preset) {
     outs.set(flow.source, list);
   }
   const kinds = new Map(graph.nodes.map((node) => [node.id, node.kind]));
+  const labels = new Map(graph.nodes.map((node) => [node.id, node.label]));
   for (const [source, list] of outs) {
     const kind = kinds.get(source);
-    const weights = kind === "xor" || kind === "or" ? presetWeights(list, preset) : list.map(() => 1 / list.length);
+    const hinted = kind === "xor" && preset === "happy" ? sem?.branches?.[labels.get(source) ?? ""] : undefined;
+    const fromHint = hinted ? list.map((flow) => hinted[labels.get(flow.target) ?? ""] ?? 0) : null;
+    const weights =
+      fromHint && fromHint.some((w) => w > 0)
+        ? fromHint.map((w) => w / fromHint.reduce((a, b) => a + b, 0))
+        : kind === "xor" || kind === "or"
+          ? presetWeights(list, preset)
+          : list.map(() => 1 / list.length);
     list.forEach((flow, index) => {
       probability[flow.id] = Math.round((weights[index] ?? 0) * 100);
     });

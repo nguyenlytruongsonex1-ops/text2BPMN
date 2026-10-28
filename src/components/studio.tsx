@@ -3,6 +3,7 @@ import { FileDown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DiagramCanvas, type DiagramHandle } from "@/components/diagram-canvas";
 import { ScenarioPanel } from "@/components/scenario-panel";
+import type { Semantics } from "@/lib/bpmn/sim";
 import { buildFromText, translateOnly } from "@/lib/bpmn/functions";
 import { copy } from "@/lib/bpmn/copy";
 import { type Lang } from "@/lib/bpmn/lang";
@@ -54,6 +55,7 @@ export function Studio() {
   const [busy, setBusy] = useState<"draft" | "translate" | null>(null);
   const [ready, setReady] = useState(false);
   const [token, setToken] = useState(0);
+  const [suggested, setSuggested] = useState<Partial<Semantics> | null>(null);
   const canvasRef = useRef<DiagramHandle>(null);
 
   useEffect(() => {
@@ -121,6 +123,7 @@ export function Studio() {
         setError(result.error ?? copy[lang].buildFailed);
         return;
       }
+      setSuggested(result.semantics ?? null);
       apply(result.diagrams, result.combinedXml, result.engine);
     } catch (error) {
       setError(messageOf(error, copy[lang].failed));
@@ -139,6 +142,7 @@ export function Studio() {
         setError(result.error ?? copy[lang].translateFailed);
         return;
       }
+      setSuggested(null);
       apply(result.diagrams, result.combinedXml, result.engine);
     } catch (error) {
       setError(messageOf(error, copy[lang].failed));
@@ -357,6 +361,7 @@ export function Studio() {
             lang={lang}
             diagramKey={`${token}:${active}:${current.name}`}
             xml={current.xml}
+            suggested={suggested}
             getXml={async () => (await canvasRef.current?.getXml()) ?? current.xml}
           />
         ) : null}

@@ -1,3 +1,4 @@
+import { validateFeatures, extractJson } from "./features.ts";
 import { detectLang } from "./prompts.ts";
 import { checkIr as checkIrV3, mergeStarts } from "./ircheck.ts";
 import assert from "node:assert/strict";
@@ -279,4 +280,61 @@ it("v3: several starts get a fix hint and mergeStarts fixes them", () => {
   assert.ok(checkIrV3(ir, "en").some((e) => e.includes("Which case?")));
   const fixed = mergeStarts(ir, "en");
   assert.deepEqual(checkIrV3(fixed, "en"), []);
+});
+
+const FEAT_IR = `process "Order"
+lane "Customer"
+lane "Clerk"
+lane "System"
+start s "Order placed" lane "Customer"
+user place "Place order" lane "Customer"
+user check "Check order" lane "Clerk"
+xor g "OK?" lane "Clerk"
+service ship "Ship" lane "System"
+user fix "Fix order" lane "Customer"
+end e "Done" lane "System"
+s -> place
+place -> check
+check -> g
+g -> ship "Yes"
+g -> fix "No"
+fix -> check
+ship -> e`;
+
+it("split: validateFeatures keeps valid entries and drops bad ids/ranges", () => {
+  const raw = extractJson(`noise {"roles":{"Clerk":{"count":3,"names":["An"]},"Ghost":{"count":2},"System":{"count":4}},
+    "customerRole":"Customer","customers":["Ann","Bob"],
+    "minutes":{"check":12,"nope":5,"ship":-1},"rework":{"check":0.2,"fix":0.9},
+    "branches":{"g":{"ship":3,"fix":1},"check":{"ship":1}},"bottlenecks":["check","zzz"]} tail`);
+  const { semantics, report } = validateFeatures(raw, FEAT_IR);
+  assert.equal(report.parsed, true);
+  assert.deepEqual(semantics.roles?.Clerk, ["An", "Clerk - NV2", "Clerk - NV3"]);
+  assert.equal(semantics.customerRole, "Customer");
+  assert.deepEqual(semantics.minutes, { "Check order": 12 });
+  assert.deepEqual(semantics.rework, { "Check order": 0.2 });
+  assert.deepEqual(semantics.branches, { "OK?": { Ship: 0.75, "Fix order": 0.25 } });
+  assert.deepEqual(semantics.bottlenecks, ["Check order"]);
+  for (const d of ["roles.Ghost", "roles.System", "minutes.nope", "minutes.ship", "rework.fix", "branches.check", "bottlenecks.*"])
+    assert.ok(report.dropped.includes(d), d);
+  assert.equal(validateFeatures("x", FEAT_IR).report.parsed, false);
+});
+
+it("split: features drive applyPreset and simulation still verifies", () => {
+  const xml = ORDER_BPMN;
+  const g = parseBpmn(xml);
+  const task = g.nodes.find((n) => n.kind === "user" || n.kind === "task" || n.kind === "service")!;
+  const xor = g.nodes.find((n) => n.kind === "xor")!;
+  const outs = g.flows.filter((f) => f.source === xor.id);
+  const target = g.nodes.find((n) => n.id === outs[1]!.target)!;
+  const sem = { minutes: { [task.label]: 40 }, bottlenecks: [task.label], branches: { [xor.label]: { [target.label]: 1 } } };
+  const happy = applyPreset(g, "happy", sem);
+  const edge = applyPreset(g, "edge", sem);
+  assert.equal(happy.minutes[task.id], 40);
+  assert.equal(edge.minutes[task.id], 100);
+  assert.equal(happy.probability[outs[1]!.id], 100);
+  assert.equal(happy.probability[outs[0]!.id], 0);
+  for (const [p, preset] of [["happy", happy], ["edge", edge]] as const) {
+    const run = simulate(g, { scenario: p, cases: 20, ...preset, semantics: sem as never });
+    assert.equal(verifyLog(g, run.rows, sem as never).valid, 20);
+  }
 });

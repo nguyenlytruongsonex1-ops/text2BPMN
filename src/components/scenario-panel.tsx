@@ -7,6 +7,7 @@ import { BranchSplit, CompareBars, PaceColumns, StepBars } from "@/components/si
 import {
   applyPreset,
   defaultSemantics,
+  resolveSemantics,
   parseBpmn,
   simulate,
   toCsv,
@@ -68,11 +69,13 @@ export function ScenarioPanel({
   lang,
   diagramKey,
   xml,
+  suggested,
   getXml,
 }: {
   lang: Lang;
   diagramKey: string;
   xml: string;
+  suggested?: Partial<Semantics> | null; // LLM call-2 features; prefill the semantics JSON
   getXml: () => Promise<string | null>;
 }) {
   const t = copy[lang];
@@ -89,8 +92,16 @@ export function ScenarioPanel({
   const [semText, setSemText] = useState("");
   const [semError, setSemError] = useState(false);
 
+  function currentSemantics(): Partial<Semantics> | null {
+    try {
+      return semText.trim() ? (JSON.parse(semText) as Partial<Semantics>) : null;
+    } catch {
+      return null;
+    }
+  }
+
   function adopt(next: SimGraph, nextMode: Mode, keepCustom: boolean) {
-    const base = applyPreset(next, nextMode === "edge" ? "edge" : "happy");
+    const base = applyPreset(next, nextMode === "edge" ? "edge" : "happy", currentSemantics());
     if (keepCustom && nextMode === "custom") {
       const minuteIds = new Set(next.nodes.map((node) => node.id));
       const flowIds = new Set(next.flows.map((flow) => flow.id));
@@ -116,8 +127,9 @@ export function ScenarioPanel({
         setMessage("empty");
         return;
       }
-      const base = applyPreset(next, "happy");
-      setSemText(JSON.stringify(defaultSemantics(next), null, 2));
+      const sem = suggested ? resolveSemantics(next, suggested) : defaultSemantics(next);
+      const base = applyPreset(next, "happy", sem);
+      setSemText(JSON.stringify(sem, null, 2));
       setSemError(false);
       setGraph(next);
       setMode("happy");
@@ -132,7 +144,7 @@ export function ScenarioPanel({
       setGraph(null);
       setMessage("empty");
     }
-  }, [diagramKey, xml]);
+  }, [diagramKey, xml, suggested]);
 
   async function readLive(nextMode: Mode) {
     try {

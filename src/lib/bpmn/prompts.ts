@@ -6,33 +6,40 @@ export function detectLang(text: string): Lang {
   return hits >= 3 ? "vi" : "en";
 }
 
-const SYSTEM_VI = `Bạn chỉ xuất IR văn bản cho BPMN cơ bản. Không XML, không markdown, không giải thích. Nhãn giữ tiếng Việt như mô tả.
+// Structure-only prompts (call 1), based on the 5acb086 prompt; examples in the input language.
+const SYSTEM_VI = `Bạn chỉ xuất IR văn bản cho BPMN cơ bản. Không XML, không markdown, không giải thích.
 
 Mỗi dòng một lệnh (<ma> là mã bước do bạn đặt, KHÔNG viết chữ "id"):
 process "Tên quy trình"
 lane "Vai trò"
 start <ma> "Nhãn" lane "Vai trò"
 end <ma> "Nhãn" lane "Vai trò"
-task|user|service <ma> "Nhãn" lane "Vai trò"
+task <ma> "Nhãn" lane "Vai trò"
+user <ma> "Nhãn" lane "Vai trò"
+service <ma> "Nhãn" lane "Vai trò"
 xor <ma> "Câu hỏi?" lane "Vai trò"
 and <ma> "Nhãn" lane "Vai trò"
 <ma_nguon> -> <ma_dich> "Nhãn nhánh"
 
 Quy tắc:
-- Mã bước duy nhất, chỉ chữ không dấu, số, _. Nhãn trong ngoặc kép. Mỗi dòng bước bắt đầu bằng loại.
-- Khai báo mọi bước trước, rồi mới viết luồng. MỌI mã dùng trong luồng PHẢI đã khai báo. Không luồng tự thân.
-- user: người làm. service: hệ thống làm. task: việc chung.
-- ĐÚNG MỘT start. Nếu mô tả có nhiều tình huống khởi đầu (nhiều loại yêu cầu/hóa đơn...), dùng một start rồi một xor "Loại yêu cầu?" chia ra từng tình huống.
-- CHỈ GATEWAY MỚI RẼ NHÁNH: start/task/user/service có TỐI ĐA MỘT luồng ra.
-  SAI:  kiem_tra -> duyet "Đạt"   và   kiem_tra -> tu_choi "Không đạt"
-  ĐÚNG: kiem_tra -> g_kq ; xor g_kq "Đạt?" ; g_kq -> duyet "Có" ; g_kq -> tu_choi "Không"
-- xor = chọn ĐÚNG MỘT nhánh, mỗi luồng ra có nhãn điều kiện. Các nhánh xor gặp lại thì hội tụ bằng một xor khác.
-- and = làm song song: and tách -> các việc -> and gộp, rồi mới đi tiếp. KHÔNG cho các nhánh song song chạy thẳng vào cùng một task (phải qua and gộp).
-- Lặp lại/làm lại: nối từ nhánh xor quay về bước trước.
-- MỌI nhánh (kể cả nhánh lỗi/hủy) phải tới một end. End không có luồng ra. Không bước nào cụt.
-- Có vai trò thì khai báo lane và gắn lane cho từng bước. Không thêm bước ngoài mô tả. Tối đa 30 bước.
+- Nhiều quy trình trong một văn bản thì mỗi quy trình bắt đầu bằng một dòng process.
+- Mã bước là duy nhất, chỉ gồm chữ không dấu, số và _ (ví dụ s1, kiem_tra, g_dat). Nhãn giữ ngôn ngữ của người dùng, đặt trong ngoặc kép. Thoát " bằng \\".
+- Mỗi dòng bước PHẢI bắt đầu bằng loại (start/end/task/user/service/xor/and), không bao giờ bắt đầu bằng mã.
+- Khai báo mọi bước trước, rồi mới viết luồng. Luồng chỉ dùng mã đã khai báo, không dùng nhãn, không nối một bước với chính nó.
+- user: việc do người làm. service: việc do hệ thống làm. task: việc chung.
+- xor khi rẽ loại trừ: mỗi luồng ra khỏi xor phải có nhãn điều kiện ngắn ("Có", "Không"...). Các nhánh xor gặp lại nhau thì hội tụ bằng một xor khác, KHÔNG bao giờ bằng and.
+- and khi làm song song: các nhánh and phải hội tụ ở một and khác trước khi đi tiếp. Luồng của and không cần nhãn.
+- Mọi mã dùng trong luồng PHẢI được khai báo trước là một bước hoặc gateway (không nối tới mã chưa khai báo).
+- Chỉ gateway mới rẽ nhánh: task/user/service/start có TỐI ĐA một luồng ra. Muốn rẽ thì nối bước đó tới một xor/and.
+- xor = chọn ĐÚNG MỘT nhánh (loại trừ, ví dụ "Còn hàng?" -> "Có"/"Hết hàng"). Việc làm song song (ví dụ soạn hàng và xuất hóa đơn cùng lúc) phải dùng and tách + and gộp, KHÔNG dùng xor.
+- Lặp lại/làm lại: nối luồng từ nhánh xor quay về bước trước đó (không cần gateway mới).
+- Đúng một start (nhiều tình huống khởi đầu thì một start rồi một xor "Loại tình huống?"). MỌI nhánh phải đi tới một end: mỗi luồng ra của xor/and (kể cả nhánh lỗi như "Báo lỗi cho khách", "Hủy đơn") cuối cùng phải nối tới một end. Không để bước nào cụt (bước không phải end mà không có luồng ra). Nhánh kết thúc khác nhau thì dùng end riêng có nhãn rõ.
+- Có vai trò thì khai báo lane và gắn lane cho từng bước. Không có vai trò thì bỏ lane.
+- Không thêm bước ngoài mô tả. Tối đa 30 bước mỗi quy trình.
+- Nhãn theo ngôn ngữ của mô tả (mô tả tiếng Anh thì nhãn tiếng Anh). Mã bước vẫn không dấu.
+- Mơ hồ thì chọn cách diễn giải ngắn nhất.
 
-Ví dụ:
+Ví dụ 2 (xor chọn một nhánh, bên trong nhánh "Có" là and song song):
 process "Xử lý đơn hàng"
 lane "Hệ thống"
 lane "Kho"
@@ -60,37 +67,72 @@ g_gop -> giao
 giao -> e1
 bao_loi -> e2
 
-Tự kiểm tra trước khi in: đúng một start; mọi mã trong luồng đã khai báo; bước không phải gateway có tối đa một luồng ra; nhánh song song gộp bằng and; mọi nhánh xor có nhãn; mọi nhánh tới end.
-Chỉ in IR.`;
+Ví dụ:
+process "Duyệt đơn nghỉ phép"
+lane "Nhân viên"
+lane "Quản lý"
+start s1 "Có nhu cầu nghỉ" lane "Nhân viên"
+user nop_don "Nộp đơn nghỉ phép" lane "Nhân viên"
+and g_song "Tách song song" lane "Quản lý"
+user xem_lich "Xem lịch nhóm" lane "Quản lý"
+service tra_phep "Tra số ngày phép" lane "Quản lý"
+and g_hop "Gộp song song" lane "Quản lý"
+xor g_duyet "Duyệt đơn?" lane "Quản lý"
+user sua_don "Sửa đơn" lane "Nhân viên"
+service ghi_nhan "Ghi nhận ngày nghỉ" lane "Quản lý"
+user bao_tu_choi "Báo từ chối cho nhân viên" lane "Quản lý"
+end e1 "Đã duyệt" lane "Quản lý"
+end e2 "Bị từ chối" lane "Nhân viên"
+s1 -> nop_don
+nop_don -> g_song
+g_song -> xem_lich
+g_song -> tra_phep
+xem_lich -> g_hop
+tra_phep -> g_hop
+g_hop -> g_duyet
+g_duyet -> ghi_nhan "Đồng ý"
+g_duyet -> sua_don "Cần sửa"
+g_duyet -> bao_tu_choi "Từ chối"
+sua_don -> nop_don
+ghi_nhan -> e1
+bao_tu_choi -> e2
 
-const SYSTEM_EN = `Output text IR for basic BPMN only. No XML, no markdown, no explanation. Labels MUST be in English, the language of the description.
+Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start; mọi nhánh (kể cả nhánh lỗi/hủy) kết thúc ở end; không bước nào ngoài end thiếu luồng ra; mọi mã trong luồng đã khai báo; bước không phải gateway có tối đa một luồng ra; nhánh xor không gộp ở and (song song thì dùng and tách/gộp).
+Chỉ IR.`;
 
-One command per line (<code> is a step code you choose, never the word "id"):
+const SYSTEM_EN = `Output text IR for basic BPMN only. No XML, no markdown, no explanation.
+
+One command per line (<code> is a step code you choose, NEVER the word "id"):
 process "Process name"
 lane "Role"
 start <code> "Label" lane "Role"
 end <code> "Label" lane "Role"
-task|user|service <code> "Label" lane "Role"
+task <code> "Label" lane "Role"
+user <code> "Label" lane "Role"
+service <code> "Label" lane "Role"
 xor <code> "Question?" lane "Role"
 and <code> "Label" lane "Role"
 <source_code> -> <target_code> "Branch label"
 
 Rules:
-- Codes are unique: ASCII letters, digits, _. Labels in double quotes. Every step line starts with its type.
-- Declare all steps first, then the flows. EVERY code used in a flow MUST be declared. No self-loops.
-- user: done by a person. service: done by a system. task: generic.
-- EXACTLY ONE start. If the text has several entry cases (several request or bill types...), use one start, then one xor "Which case?" that splits into each case.
-- ONLY GATEWAYS BRANCH: start/task/user/service have AT MOST ONE outgoing flow.
-  WRONG: check -> approve "OK"   and   check -> reject "Not OK"
-  RIGHT: check -> g_res ; xor g_res "OK?" ; g_res -> approve "Yes" ; g_res -> reject "No"
-- xor = choose EXACTLY ONE branch; label every outgoing flow with its condition. xor branches that meet again merge in another xor.
-- and = parallel work: and split -> the tasks -> and join, then continue. Parallel branches must NEVER run straight into the same task (use the and join).
-- Rework/loops: link from a xor branch back to an earlier step.
-- EVERY branch (including error/cancel branches) must reach an end. An end has no outgoing flow. No dead-end steps.
-- If roles exist, declare lanes and give every step a lane. Do not add steps that are not in the text. At most 30 steps.
+- Several processes in one text: each starts with its own process line.
+- Step codes are unique, only ASCII letters, digits and _ (e.g. s1, check_stock, g_ok). Labels in double quotes, in the language of the description (English). Escape " as \\".
+- Every step line MUST start with its type (start/end/task/user/service/xor/and), never with the code.
+- Declare all steps first, then the flows. Flows use declared codes only, never labels, never a step to itself.
+- user: done by a person. service: done by a system. task: generic work.
+- xor for exclusive choices: every flow out of a xor has a short condition label ("Yes", "No"...). xor branches that meet again merge in another xor, NEVER in an and.
+- and for parallel work: and branches must merge in another and before continuing. and flows need no label.
+- Every code used in a flow MUST be declared as a step or gateway.
+- Only gateways branch: task/user/service/start have AT MOST one outgoing flow. To branch, link the step to a xor/and.
+- xor = choose EXACTLY ONE branch (e.g. "In stock?" -> "Yes"/"No"). Work done at the same time (e.g. packing and invoicing) must use an and split + and join, NOT a xor.
+- Rework/repeat: link a xor branch back to an earlier step (no new gateway needed).
+- Exactly one start (several entry cases: one start, then a xor "Which case?"). EVERY branch must reach an end: every flow out of a xor/and (including error branches like "Notify customer", "Cancel order") must finally reach an end. No dead-end steps (a non-end step without outgoing flow). Different outcomes use separate, clearly labelled ends.
+- If roles exist, declare lanes and give every step a lane. No roles: omit lane.
+- Do not add steps that are not in the text. At most 30 steps per process.
+- If ambiguous, pick the shortest reading.
 
-Example:
-process "Handle customer order"
+Example 2 (xor picks one branch; inside the "Yes" branch an and runs in parallel):
+process "Handle order"
 lane "System"
 lane "Warehouse"
 lane "Accounting"
@@ -117,7 +159,37 @@ g_join -> ship
 ship -> e1
 notify -> e2
 
-Self-check before printing: exactly one start; every code in a flow is declared; non-gateway steps have at most one outgoing flow; parallel branches join with an and; every xor branch is labelled; every branch reaches an end; labels in English.
+Example:
+process "Approve leave request"
+lane "Employee"
+lane "Manager"
+start s1 "Leave needed" lane "Employee"
+user submit "Submit leave request" lane "Employee"
+and g_split "Split" lane "Manager"
+user view_cal "Check team calendar" lane "Manager"
+service days_left "Look up leave balance" lane "Manager"
+and g_join "Join" lane "Manager"
+xor g_ok "Approve request?" lane "Manager"
+user edit "Edit request" lane "Employee"
+service record "Record leave" lane "Manager"
+user notify_reject "Notify rejection" lane "Manager"
+end e1 "Approved" lane "Manager"
+end e2 "Rejected" lane "Employee"
+s1 -> submit
+submit -> g_split
+g_split -> view_cal
+g_split -> days_left
+view_cal -> g_join
+days_left -> g_join
+g_join -> g_ok
+g_ok -> record "Approve"
+g_ok -> edit "Needs changes"
+g_ok -> notify_reject "Reject"
+edit -> submit
+record -> e1
+notify_reject -> e2
+
+Self-check before printing: every step line starts with its type; codes unique and not "id"; every flow uses declared codes; no self-loops; every xor branch labelled; xor merges with xor, and with and; exactly one start; every branch (including error/cancel) ends at an end; no non-end step without outgoing flow; non-gateway steps have at most one outgoing flow; xor branches never merge at an and; labels in English.
 Output IR only.`;
 
 export const SYSTEMS: Record<Lang, string> = { vi: SYSTEM_VI, en: SYSTEM_EN };
