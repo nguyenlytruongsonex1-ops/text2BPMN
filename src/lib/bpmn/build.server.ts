@@ -39,7 +39,7 @@ Quy tắc:
 - xor khi rẽ loại trừ: mỗi luồng ra khỏi xor phải có nhãn điều kiện ngắn ("Có", "Không"...). Các nhánh xor gặp lại nhau thì hội tụ bằng một xor khác, KHÔNG bao giờ bằng and.
 - and khi làm song song: các nhánh and phải hội tụ ở một and khác trước khi đi tiếp. Luồng của and không cần nhãn.
 - Lặp lại/làm lại: nối luồng từ nhánh xor quay về bước trước đó (không cần gateway mới).
-- Đúng một start. Một end, trừ khi các nhánh thật sự kết thúc khác nhau.
+- Đúng một start. MỌI nhánh phải đi tới một end: mỗi luồng ra của xor/and (kể cả nhánh lỗi như "Báo lỗi cho khách", "Hủy đơn") cuối cùng phải nối tới một end. Không để bước nào cụt (bước không phải end mà không có luồng ra). Nhánh kết thúc khác nhau thì dùng end riêng có nhãn rõ.
 - Có vai trò thì khai báo lane và gắn lane cho từng bước. Không có vai trò thì bỏ lane.
 - Không thêm bước ngoài mô tả. Tối đa 30 bước mỗi quy trình.
 - Nhãn theo ngôn ngữ của mô tả (mô tả tiếng Anh thì nhãn tiếng Anh). Mã bước vẫn không dấu.
@@ -58,7 +58,9 @@ and g_hop "Gộp song song" lane "Quản lý"
 xor g_duyet "Duyệt đơn?" lane "Quản lý"
 user sua_don "Sửa đơn" lane "Nhân viên"
 service ghi_nhan "Ghi nhận ngày nghỉ" lane "Quản lý"
-end e1 "Xong" lane "Quản lý"
+user bao_tu_choi "Báo từ chối cho nhân viên" lane "Quản lý"
+end e1 "Đã duyệt" lane "Quản lý"
+end e2 "Bị từ chối" lane "Nhân viên"
 s1 -> nop_don
 nop_don -> g_song
 g_song -> xem_lich
@@ -68,10 +70,12 @@ tra_phep -> g_hop
 g_hop -> g_duyet
 g_duyet -> ghi_nhan "Đồng ý"
 g_duyet -> sua_don "Cần sửa"
+g_duyet -> bao_tu_choi "Từ chối"
 sua_don -> nop_don
 ghi_nhan -> e1
+bao_tu_choi -> e2
 
-Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start.
+Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start; mọi nhánh (kể cả nhánh lỗi/hủy) kết thúc ở end; không bước nào ngoài end thiếu luồng ra.
 Chỉ in IR.`;
 
 function asText(content: unknown): string {

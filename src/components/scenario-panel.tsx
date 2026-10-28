@@ -352,6 +352,9 @@ export function ScenarioPanel({
           {latest.completed < latest.cases ? (
             <p className="text-sm text-muted">{fill(t.completedOf, { done: latest.completed, cases: latest.cases })}</p>
           ) : null}
+          {check?.warnings?.map((w) => (
+            <p key={w} className="text-sm font-medium text-ink">⚠ {t.verifyLabel}: {w}</p>
+          ))}
           {check ? (
             check.errors.length ? (
               <div role="alert" className="flex flex-col gap-1 rounded-sm border border-ink px-3 py-2 text-sm text-ink">

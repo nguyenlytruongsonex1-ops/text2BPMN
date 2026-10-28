@@ -272,6 +272,8 @@ const TEXT = {
     noFlows: "Không thấy luồng — đã nối tuần tự theo thứ tự khai báo.",
     empty: (name: string) => `Bỏ qua quy trình trống «${name}».`,
     unlinked: (label: string) => `Bước «${label}» chưa được nối.`,
+    noEnd: (label: string) => `Nhánh không có điểm kết thúc sau «${label}» — đã tự thêm end.`,
+    autoEnd: "Kết thúc",
     noSteps: "IR không có bước nào. Thêm start, task hoặc end.",
     dupIds: (ids: string) => `Trùng id BPMN: ${ids}`,
     truncated: "XML cắt cụt",
@@ -293,6 +295,8 @@ const TEXT = {
     noFlows: "No flows found — connected the steps in the order they were declared.",
     empty: (name: string) => `Skipped empty process «${name}».`,
     unlinked: (label: string) => `Step «${label}» is not connected.`,
+    noEnd: (label: string) => `Branch after «${label}» has no end event — added one.`,
+    autoEnd: "End",
     noSteps: "The IR has no steps. Add a start, task, or end.",
     dupIds: (ids: string) => `Duplicate BPMN id: ${ids}`,
     truncated: "Truncated XML",
@@ -460,6 +464,16 @@ function parseIr(text: string, lang: Lang): { processes: Proc[]; error: string |
     }
     const keep = new Set(nodes.map((node) => node.id));
     const kept = flows.filter((flow) => keep.has(flow.src) && keep.has(flow.dst));
+    // Safety net: every branch must finish at an end event.
+    for (const node of [...nodes]) {
+      if (node.kind === "end" || kept.some((f) => f.src === node.id) || !kept.some((f) => f.dst === node.id)) continue;
+      let endId = `end_${node.id}`;
+      while (keep.has(endId)) endId += "_";
+      keep.add(endId);
+      nodes.push({ id: endId, kind: "end", label: messages.autoEnd, lane: node.lane });
+      kept.push({ src: node.id, dst: endId, label: null });
+      proc.warnings.push(messages.noEnd(node.label));
+    }
     if (!nodes.length) {
       proc.warnings.push(messages.empty(proc.name));
       continue;

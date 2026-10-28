@@ -47,6 +47,8 @@ MESSAGES = {
         "no_flows": "Không thấy luồng — đã nối tuần tự theo thứ tự khai báo.",
         "empty": "Bỏ qua quy trình trống «{name}».",
         "unlinked": "Bước «{label}» chưa được nối.",
+        "no_end": "Nhánh không có điểm kết thúc sau «{label}» — đã tự thêm end.",
+        "auto_end": "Kết thúc",
         "no_steps": "IR không có bước nào. Thêm start, task hoặc end.",
         "dup_ids": "Trùng id BPMN: {ids}",
         "bad_xml": "Không dựng được XML hợp lệ ({detail}).",
@@ -68,6 +70,8 @@ MESSAGES = {
         "no_flows": "No flows found — connected the steps in the order they were declared.",
         "empty": "Skipped empty process «{name}».",
         "unlinked": "Step «{label}» is not connected.",
+        "no_end": "Branch after «{label}» has no end event — added one.",
+        "auto_end": "End",
         "no_steps": "The IR has no steps. Add a start, task, or end.",
         "dup_ids": "Duplicate BPMN id: {ids}",
         "bad_xml": "Could not build valid XML ({detail}).",
@@ -475,6 +479,19 @@ def parse_ir(text: str) -> tuple[list[dict], str | None]:
                 flows.append({"src": left["id"], "dst": right["id"], "label": None})
         keep = {n["id"] for n in nodes}
         flows = [f for f in flows if f["src"] in keep and f["dst"] in keep]
+        # Safety net: every branch must finish at an end event.
+        for node in list(nodes):
+            if node["kind"] == "end" or any(f["src"] == node["id"] for f in flows):
+                continue
+            if not any(f["dst"] == node["id"] for f in flows):
+                continue
+            end_id = "end_" + node["id"]
+            while end_id in keep:
+                end_id += "_"
+            keep.add(end_id)
+            nodes.append({"id": end_id, "kind": "end", "label": say("auto_end"), "lane": node["lane"]})
+            flows.append({"src": node["id"], "dst": end_id, "label": None})
+            proc["warnings"].append(say("no_end", label=node["label"]))
         if not nodes:
             proc["warnings"].append(say("empty", name=proc["name"]))
             continue

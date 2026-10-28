@@ -124,7 +124,45 @@ describe("bug: model without end events + partial semantics JSON", () => {
     const r = simulate(g, { scenario: "x", cases: 50, ...applyPreset(g, "happy"), semantics: sem });
     assert.equal(r.completed, 50);
     const v = verifyLog(g, r.rows, sem);
+    assert.deepEqual(v.warnings, ["mô hình thiếu điểm kết thúc"]);
     assert.equal(v.errors.length, 0, JSON.stringify(v.errors.slice(0, 2)));
     assert.ok(!("Kiểm tra tồn kho" in defaultSemantics(g).rework!));
+  });
+});
+
+const DANGLING_IR = `process "Đơn"
+lane "Hệ thống"
+start s "Đặt hàng" lane "Hệ thống"
+service k "Kiểm tra tồn kho" lane "Hệ thống"
+xor g "Còn hàng?" lane "Hệ thống"
+service b "Báo lỗi cho khách" lane "Hệ thống"
+service c "Soạn hàng" lane "Hệ thống"
+s -> k
+k -> g
+g -> c "Có"
+g -> b "Không"`;
+
+describe("end events safety net", () => {
+  it("JS fallback adds an end to dangling branches with a warning", async () => {
+    const { translateIr } = await import("./translate.ts");
+    const out = translateIr(DANGLING_IR, "vi");
+    assert.ok(out.ok);
+    const d = out.diagrams[0]!;
+    assert.equal(d.warnings.filter((w) => /Nhánh không có điểm kết thúc/.test(w)).length, 2);
+    const g = parseBpmn(d.xml);
+    assert.equal(g.nodes.filter((n) => n.kind === "end").length, 2);
+    const r = simulate(g, { scenario: "x", cases: 20, ...applyPreset(g, "happy") });
+    const v = verifyLog(g, r.rows);
+    assert.equal(v.errors.length, 0);
+    assert.deepEqual(v.warnings, []);
+  });
+
+  it("python engine adds the same ends", async () => {
+    const { execFileSync } = await import("node:child_process");
+    const out = execFileSync("python3", ["src/lib/bpmn/ir_to_bpmn.py"], { input: DANGLING_IR }).toString();
+    const res = JSON.parse(out) as { diagrams: { xml: string; warnings: string[] }[] };
+    const d = res.diagrams[0]!;
+    assert.equal((d.xml.match(/endEvent id=/g) ?? []).length, 2);
+    assert.equal(d.warnings.filter((w) => /Nhánh không có điểm kết thúc/.test(w)).length, 2);
   });
 });

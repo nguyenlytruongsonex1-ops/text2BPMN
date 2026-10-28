@@ -1,7 +1,7 @@
 import { resolveSemantics, type LogRow, type Semantics, type SimFlow, type SimGraph } from "./sim.ts";
 
 export type VerifyError = { caseId: string; message: string };
-export type VerifyResult = { total: number; valid: number; errors: VerifyError[] };
+export type VerifyResult = { total: number; valid: number; errors: VerifyError[]; warnings: string[] };
 
 type Token = { id: string; t: number };
 type State = Token[];
@@ -131,7 +131,7 @@ export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Partial<S
     if (message) errors.push({ caseId, message });
     else valid += 1;
   }
-  return { total: byCase.size, valid, errors };
+  return { total: byCase.size, valid, errors, warnings: hasEnd ? [] : ["mô hình thiếu điểm kết thúc"] };
 }
 
 const WORKS = new Set(["task", "user", "service"]);
