@@ -6,6 +6,7 @@ import type { Lang } from "@/lib/bpmn/lang";
 import { BranchSplit, CompareBars, PaceColumns, StepBars } from "@/components/sim-picture";
 import {
   applyPreset,
+  defaultSemantics,
   parseBpmn,
   simulate,
   toCsv,
@@ -13,6 +14,7 @@ import {
   type Preset,
   type Problem,
   type RunResult,
+  type Semantics,
   type SimGraph,
 } from "@/lib/bpmn/sim";
 import { verifyLog, type VerifyResult } from "@/lib/bpmn/verify";
@@ -84,6 +86,8 @@ export function ScenarioPanel({
   const [latest, setLatest] = useState<RunResult | null>(null);
   const [check, setCheck] = useState<VerifyResult | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [semText, setSemText] = useState("");
+  const [semError, setSemError] = useState(false);
 
   function adopt(next: SimGraph, nextMode: Mode, keepCustom: boolean) {
     const base = applyPreset(next, nextMode === "edge" ? "edge" : "happy");
@@ -113,6 +117,8 @@ export function ScenarioPanel({
         return;
       }
       const base = applyPreset(next, "happy");
+      setSemText(JSON.stringify(defaultSemantics(next), null, 2));
+      setSemError(false);
       setGraph(next);
       setMode("happy");
       setMinutes(base.minutes);
@@ -153,8 +159,16 @@ export function ScenarioPanel({
   function onRun() {
     if (!graph) return;
     const scenario = mode === "edge" ? t.edge : mode === "custom" ? t.custom : t.happy;
-    const result = simulate(graph, { scenario, cases, minutes, rework, probability });
-    const verified = verifyLog(graph, result.rows);
+    let semantics: Semantics | undefined;
+    try {
+      semantics = semText.trim() ? (JSON.parse(semText) as Semantics) : undefined;
+      setSemError(false);
+    } catch {
+      setSemError(true);
+      return;
+    }
+    const result = simulate(graph, { scenario, cases, minutes, rework, probability, semantics });
+    const verified = verifyLog(graph, result.rows, semantics);
     if (verified.errors.length) console.error(`${t.verifyLabel} (${scenario})`, verified.errors);
     setCheck(verified);
     setLatest(result);
@@ -210,6 +224,18 @@ export function ScenarioPanel({
               className="h-11 rounded-sm border border-line bg-paper px-3 text-sm font-normal text-ink outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             />
           </label>
+          <details className="text-sm">
+            <summary className="cursor-pointer font-medium text-ink">{t.people}</summary>
+            <p className="mt-2 text-muted">{t.peopleHint}</p>
+            <textarea
+              value={semText}
+              onChange={(event) => setSemText(event.target.value)}
+              rows={10}
+              spellCheck={false}
+              className="mt-2 w-full rounded-sm border border-line bg-paper p-2 font-mono text-xs text-ink"
+            />
+            {semError ? <p className="text-red-700">{t.peopleBad}</p> : null}
+          </details>
           <Button onClick={onRun}>{t.runSim}</Button>
 
           <details className="text-sm">

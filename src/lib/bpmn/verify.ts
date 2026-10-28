@@ -1,4 +1,4 @@
-import type { LogRow, SimFlow, SimGraph } from "./sim";
+import { defaultSemantics, type LogRow, type Semantics, type SimFlow, type SimGraph } from "./sim.ts";
 
 export type VerifyError = { caseId: string; message: string };
 export type VerifyResult = { total: number; valid: number; errors: VerifyError[] };
@@ -23,7 +23,7 @@ function key(state: State) {
 // Replays each case of a simulated log on the model (token game). Gateways are silent:
 // XOR/OR pass one token to exactly one branch, AND splits to all branches and joins only
 // when every incoming branch has arrived. A step may repeat right after itself (rework).
-export function verifyLog(graph: SimGraph, rows: LogRow[]): VerifyResult {
+export function verifyLog(graph: SimGraph, rows: LogRow[], semantics?: Semantics): VerifyResult {
   const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
   const outs = new Map<string, SimFlow[]>();
   const ins = new Map<string, number>();
@@ -70,6 +70,7 @@ export function verifyLog(graph: SimGraph, rows: LogRow[]): VerifyResult {
   const byCase = new Map<string, LogRow[]>();
   for (const row of rows) byCase.set(row.caseId, [...(byCase.get(row.caseId) ?? []), row]);
 
+  const busy = overlaps(graph, rows, semantics ?? defaultSemantics(graph));
   const errors: VerifyError[] = [];
   let valid = 0;
   for (const [caseId, raw] of byCase) {
@@ -122,8 +123,51 @@ export function verifyLog(graph: SimGraph, rows: LogRow[]): VerifyResult {
       if (!endSeen) message = `không tới điểm kết thúc (dừng sau «${last?.id ?? "?"}»)`;
       else if (!done) message = "còn nhánh chưa hoàn tất khi kết thúc (thiếu bước song song?)";
     }
+    if (!message) message = resourceIssue(graph, raw, semantics ?? defaultSemantics(graph));
+    if (!message) message = busy.get(caseId) ?? "";
     if (message) errors.push({ caseId, message });
     else valid += 1;
   }
   return { total: byCase.size, valid, errors };
+}
+
+const WORKS = new Set(["task", "user", "service"]);
+
+// Resource checks: performer belongs to the step's role pool; customer steps done by the case's customer.
+function resourceIssue(graph: SimGraph, rows: LogRow[], sem: Semantics): string {
+  const roleOf = new Map(graph.nodes.filter((n) => WORKS.has(n.kind)).map((n) => [n.label, n.role]));
+  const customer = rows[0]?.customer ?? "";
+  for (const row of rows) {
+    const role = roleOf.get(row.activity);
+    if (role === undefined) continue;
+    if (sem.customerRole && role === sem.customerRole) {
+      if (row.resource !== customer) return `«${row.activity}» do ${row.resource} làm, nhưng khách của hồ sơ là ${customer || "?"}`;
+      continue;
+    }
+    const pool = sem.roles[role];
+    if (pool?.length && !pool.includes(row.resource)) return `«${row.activity}» do ${row.resource || "?"} làm, không thuộc nhóm «${role}»`;
+  }
+  return "";
+}
+
+// One person cannot do two activities at once (customers and unlimited roles are exempt).
+function overlaps(graph: SimGraph, rows: LogRow[], sem: Semantics) {
+  const roleOf = new Map(graph.nodes.filter((n) => WORKS.has(n.kind)).map((n) => [n.label, n.role]));
+  const byPerson = new Map<string, LogRow[]>();
+  for (const row of rows) {
+    const role = roleOf.get(row.activity);
+    if (role === undefined || !row.resource || role === sem.customerRole || sem.unlimited?.includes(role)) continue;
+    byPerson.set(row.resource, [...(byPerson.get(row.resource) ?? []), row]);
+  }
+  const out = new Map<string, string>();
+  for (const [person, list] of byPerson) {
+    list.sort((a, b) => stamp(a.start) - stamp(b.start));
+    for (let i = 1; i < list.length; i += 1) {
+      const prev = list[i - 1]!;
+      const cur = list[i]!;
+      if (stamp(cur.start) < stamp(prev.end) && !out.has(cur.caseId))
+        out.set(cur.caseId, `${person} làm «${cur.activity}» (hồ sơ ${cur.caseId}) trùng giờ với «${prev.activity}» (hồ sơ ${prev.caseId})`);
+    }
+  }
+  return out;
 }

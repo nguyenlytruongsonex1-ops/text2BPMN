@@ -68,7 +68,7 @@ describe("bpmn simulation", () => {
     assert.ok(yes && yes.share >= 80);
     assert.ok(no && no.share >= 60);
     assert.equal(happy.completed, 200);
-    assert.match(toCsv(happy.rows), /^Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Scenario_Type/);
+    assert.match(toCsv(happy.rows), /^Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type/);
     assert.match(toXes(happy.rows, "Happy"), /xes.version="1.0"/);
     assert.match(toXes(happy.rows, "Happy"), /lifecycle:transition" value="complete"/);
   });

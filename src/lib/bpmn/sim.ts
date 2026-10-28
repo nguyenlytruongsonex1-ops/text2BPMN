@@ -31,7 +31,41 @@ export type LogRow = {
   end: string;
   resource: string;
   scenario: string;
+  role?: string;
+  customer?: string;
 };
+
+// Semantic config: who can do the work. LLM may propose it; default comes from lanes.
+export type Semantics = {
+  roles: Record<string, string[]>; // role (lane) -> named people
+  unlimited?: string[]; // roles with no capacity limit (e.g. system)
+  customerRole?: string; // lane whose tasks are done by the case's own customer
+  customers?: string[];
+  minutes?: Record<string, number>; // optional per-task duration by label
+};
+
+const SYSTEM_RE = /(hệ thống|he thong|system|website|app)/i;
+
+export function defaultSemantics(graph: SimGraph): Semantics {
+  const lanes = [...new Set(graph.nodes.filter((n) => WORK.has(n.kind)).map((n) => n.role))];
+  const sem: Semantics = { roles: {}, unlimited: [] };
+  for (const lane of lanes) {
+    // requester lane (customer, or the employee/applicant who files the case) = per-case entity
+    if (!sem.customerRole && /(khách|khach|customer|client|^nhân viên$|^employee$|ứng viên|applicant)/i.test(lane.trim())) {
+      const prefix = /(khách|khach)/i.test(lane) ? "Khách" : /(customer|client)/i.test(lane) ? "Customer" : lane;
+      sem.customerRole = lane;
+      sem.customers = ["A", "B", "C"].map((x) => `${prefix} ${x}`);
+      sem.roles[lane] = sem.customers;
+    } else if (SYSTEM_RE.test(lane) || lane === "Unassigned") {
+      sem.roles[lane] = [lane];
+      sem.unlimited!.push(lane);
+    } else {
+      const size = /(quản lý|quan ly|manager|giám đốc|director)/i.test(lane) ? 1 : 2;
+      sem.roles[lane] = Array.from({ length: size }, (_, i) => `${lane} - NV${i + 1}`);
+    }
+  }
+  return sem;
+}
 
 export type Problem =
   | { code: "incomplete"; count: number }
@@ -336,8 +370,11 @@ export function simulate(
     minutes: Record<string, number>;
     rework: Record<string, number>;
     probability: Record<string, number>;
+    semantics?: Semantics;
   },
 ): RunResult {
+  const sem = input.semantics ?? defaultSemantics(graph);
+  const freeAt = new Map<string, number>(); // person -> time they become free
   const cases = Math.max(1, Math.min(2000, Math.round(input.cases) || 1));
   const nodes = new Map(graph.nodes.map((node) => [node.id, node]));
   const outgoing = new Map<string, SimFlow[]>();
@@ -361,6 +398,7 @@ export function simulate(
       minutes: input.minutes,
       rework: input.rework,
       probability: input.probability,
+      sem,
     }),
   );
   const random = mulberry32(seed);
@@ -373,82 +411,138 @@ export function simulate(
   const branchTries = new Map<string, number>();
   let completed = 0;
 
-  for (let index = 0; index < cases; index += 1) {
-    const caseId = String(index + 1).padStart(4, "0");
-    const waits = new Map<string, number[]>();
-    const queue: { id: string; time: number }[] = roots.map((id) => ({ id, time: BASE_MS + index * CASE_GAP_MS }));
-    let steps = 0;
-    let sawEnd = false;
-    let first = Number.POSITIVE_INFINITY;
-    let last = 0;
-    while (queue.length && steps < 500) {
-      steps += 1;
-      const token = queue.shift()!;
-      const node = nodes.get(token.id);
-      if (!node) continue;
-      let time = token.time;
-      const ins = incoming.get(node.id) ?? 0;
-      if (node.kind === "and" && ins > 1) {
-        const bag = waits.get(node.id) ?? [];
-        bag.push(time);
-        waits.set(node.id, bag);
-        if (bag.length < ins) continue;
-        time = Math.max(...bag);
-        waits.set(node.id, []);
-      }
-      if (node.kind === "end") sawEnd = true;
-      if (node.kind !== "xor" && node.kind !== "and" && node.kind !== "or") {
-        let repeats = 0;
-        let again = true;
-        const rework = Math.max(0, Math.min(80, input.rework[node.id] ?? 0)) / 100;
-        while (again && repeats < 5) {
-          const minutes = Math.max(0, input.minutes[node.id] ?? node.minutes);
-          const duration = node.kind === "start" || node.kind === "end" ? 1000 : Math.max(1000, minutes * 60_000);
-          const end = time + duration;
-          rows.push({
-            caseId,
-            activity: node.label,
-            start: csvStamp(time),
-            end: csvStamp(end),
-            resource: node.role || "Unassigned",
-            scenario: input.scenario,
-          });
-          if (WORK.has(node.kind)) {
-            workMs.set(node.label, (workMs.get(node.label) ?? 0) + duration);
-            workHits.set(node.label, (workHits.get(node.label) ?? 0) + 1);
-            if (repeats > 0) reworkHits.set(node.label, (reworkHits.get(node.label) ?? 0) + 1);
-          }
-          first = Math.min(first, time);
-          last = Math.max(last, end);
-          time = end;
-          repeats += 1;
-          again = WORK.has(node.kind) && repeats < 5 && random() < rework;
-        }
-      }
-      const outs = outgoing.get(node.id) ?? [];
-      if (!outs.length) continue;
-      if (node.kind === "and") {
-        for (const flow of outs) queue.push({ id: flow.target, time });
-        continue;
-      }
-      const weights = outs.map((flow) => Math.max(0, input.probability[flow.id] ?? flow.probability * 100));
-      const choice = outs.length === 1 ? 0 : pick(weights, random);
-      const flow = outs[choice];
-      if (!flow) continue;
-      if (node.kind === "xor" || node.kind === "or") {
-        branchTries.set(node.id, (branchTries.get(node.id) ?? 0) + 1);
-        branchHits.set(flow.id, (branchHits.get(flow.id) ?? 0) + 1);
-      }
-      queue.push({ id: flow.target, time });
+  type Tok = { c: number; id: string; time: number; seq: number };
+  type CaseState = {
+    caseId: string;
+    customer: string;
+    waits: Map<string, number[]>;
+    open: number;
+    sawEnd: boolean;
+    steps: number;
+    first: number;
+    last: number;
+  };
+  const states: CaseState[] = [];
+  const agenda: Tok[] = [];
+  let seq = 0;
+  const push = (tok: Omit<Tok, "seq">) => {
+    const item = { ...tok, seq: seq++ };
+    let lo = 0;
+    let hi = agenda.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      const m = agenda[mid]!;
+      if (m.time < item.time || (m.time === item.time && m.seq < item.seq)) lo = mid + 1;
+      else hi = mid;
     }
-    const complete = sawEnd && queue.length === 0;
+    agenda.splice(lo, 0, item);
+    states[item.c]!.open += 1;
+  };
+  const customers = sem.customers?.length ? sem.customers : [];
+  for (let index = 0; index < cases; index += 1) {
+    states.push({
+      caseId: String(index + 1).padStart(4, "0"),
+      customer: customers.length ? customers[Math.floor(random() * customers.length)]! : "",
+      waits: new Map(),
+      open: 0,
+      sawEnd: false,
+      steps: 0,
+      first: Number.POSITIVE_INFINITY,
+      last: 0,
+    });
+    for (const id of roots) push({ c: index, id, time: BASE_MS + index * CASE_GAP_MS });
+  }
+  // Pick who does the step: the case's customer, an unlimited role, or the earliest-free member.
+  const assign = (cs: CaseState, role: string, ready: number) => {
+    if (sem.customerRole && role === sem.customerRole && cs.customer) return { who: cs.customer, at: ready, hold: false };
+    const pool = sem.roles[role];
+    if (!pool?.length || sem.unlimited?.includes(role)) return { who: pool?.[0] ?? role, at: ready, hold: false };
+    let who = pool[0]!;
+    for (const p of pool) if ((freeAt.get(p) ?? 0) < (freeAt.get(who) ?? 0)) who = p;
+    return { who, at: Math.max(ready, freeAt.get(who) ?? 0), hold: true };
+  };
+
+  while (agenda.length) {
+    const token = agenda.shift()!;
+    const cs = states[token.c]!;
+    cs.open -= 1;
+    if (cs.steps >= 500) continue;
+    cs.steps += 1;
+    const caseId = cs.caseId;
+    const waits = cs.waits;
+    const node = nodes.get(token.id);
+    if (!node) continue;
+    let time = token.time;
+    const ins = incoming.get(node.id) ?? 0;
+    if (node.kind === "and" && ins > 1) {
+      const bag = waits.get(node.id) ?? [];
+      bag.push(time);
+      waits.set(node.id, bag);
+      if (bag.length < ins) continue;
+      time = Math.max(...bag);
+      waits.set(node.id, []);
+    }
+    if (node.kind === "end") cs.sawEnd = true;
+    if (node.kind !== "xor" && node.kind !== "and" && node.kind !== "or") {
+      let repeats = 0;
+      let again = true;
+      const rework = Math.max(0, Math.min(80, input.rework[node.id] ?? 0)) / 100;
+      const work = WORK.has(node.kind);
+      const slot = work ? assign(cs, node.role, time) : { who: "", at: time, hold: false };
+      time = slot.at;
+      while (again && repeats < 5) {
+        const minutes = Math.max(0, input.minutes[node.id] ?? sem.minutes?.[node.label] ?? node.minutes);
+        const duration = node.kind === "start" || node.kind === "end" ? 1000 : Math.max(1000, minutes * 60_000);
+        const end = time + duration;
+        rows.push({
+          caseId,
+          activity: node.label,
+          start: csvStamp(time),
+          end: csvStamp(end),
+          resource: slot.who,
+          role: node.role || "Unassigned",
+          customer: cs.customer,
+          scenario: input.scenario,
+        });
+        if (work) {
+          workMs.set(node.label, (workMs.get(node.label) ?? 0) + duration);
+          workHits.set(node.label, (workHits.get(node.label) ?? 0) + 1);
+          if (repeats > 0) reworkHits.set(node.label, (reworkHits.get(node.label) ?? 0) + 1);
+        }
+        cs.first = Math.min(cs.first, time);
+        cs.last = Math.max(cs.last, end);
+        time = end;
+        repeats += 1;
+        again = work && repeats < 5 && random() < rework;
+      }
+      if (slot.hold) freeAt.set(slot.who, time);
+    }
+    const outs = outgoing.get(node.id) ?? [];
+    if (!outs.length) continue;
+    if (node.kind === "and") {
+      for (const flow of outs) push({ c: token.c, id: flow.target, time });
+      continue;
+    }
+    const weights = outs.map((flow) => Math.max(0, input.probability[flow.id] ?? flow.probability * 100));
+    const choice = outs.length === 1 ? 0 : pick(weights, random);
+    const flow = outs[choice];
+    if (!flow) continue;
+    if (node.kind === "xor" || node.kind === "or") {
+      branchTries.set(node.id, (branchTries.get(node.id) ?? 0) + 1);
+      branchHits.set(flow.id, (branchHits.get(flow.id) ?? 0) + 1);
+    }
+    push({ c: token.c, id: flow.target, time });
+  }
+  for (const cs of states) {
+    const complete = cs.sawEnd && cs.open === 0 && [...cs.waits.values()].every((b) => !b.length);
     if (complete) completed += 1;
     caseMinutes.push({
-      caseId,
-      minutes: Number.isFinite(first) ? (last - first) / 60_000 : 0,
+      caseId: cs.caseId,
+      minutes: Number.isFinite(cs.first) ? (cs.last - cs.first) / 60_000 : 0,
       complete,
     });
   }
+  rows.sort((a, b) => (a.caseId < b.caseId ? -1 : a.caseId > b.caseId ? 1 : a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
 
   const finished = caseMinutes.filter((item) => item.complete);
   const avgMinutes = finished.length
@@ -545,11 +639,18 @@ function paceBars(values: number[]): PaceBar[] {
 }
 
 export function toCsv(rows: LogRow[]) {
-  const header = "Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Scenario_Type";
+  const header = "Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type";
   const lines = rows.map((row) =>
-    [row.caseId, row.activity, row.start, row.end, row.resource, row.scenario].map(csvEscape).join(","),
+    [row.caseId, row.activity, row.start, row.end, row.resource, row.role ?? "", row.customer ?? "", row.scenario].map(csvEscape).join(","),
   );
   return [header, ...lines].join("\n");
+}
+
+function orgAttrs(event: LogRow) {
+  let out = "";
+  if (event.resource) out += `\n        <string key="org:resource" value="${xmlEscape(event.resource)}"/>`;
+  if (event.role) out += `\n        <string key="org:role" value="${xmlEscape(event.role)}"/>`;
+  return out;
 }
 
 export function toXes(rows: LogRow[], scenario: string) {
@@ -566,20 +667,19 @@ export function toXes(rows: LogRow[], scenario: string) {
           `      <event>
         <string key="concept:name" value="${xmlEscape(event.activity)}"/>
         <string key="lifecycle:transition" value="start"/>
-        <date key="time:timestamp" value="${event.start.replace(" ", "T")}Z"/>
-        <string key="org:resource" value="${xmlEscape(event.resource)}"/>
+        <date key="time:timestamp" value="${event.start.replace(" ", "T")}Z"/>${orgAttrs(event)}
       </event>`,
           `      <event>
         <string key="concept:name" value="${xmlEscape(event.activity)}"/>
         <string key="lifecycle:transition" value="complete"/>
-        <date key="time:timestamp" value="${event.end.replace(" ", "T")}Z"/>
-        <string key="org:resource" value="${xmlEscape(event.resource)}"/>
+        <date key="time:timestamp" value="${event.end.replace(" ", "T")}Z"/>${orgAttrs(event)}
       </event>`,
         ])
         .join("\n");
       return `    <trace>
       <string key="concept:name" value="${xmlEscape(caseId)}"/>
-      <string key="scenario:type" value="${xmlEscape(scenario)}"/>
+      <string key="scenario:type" value="${xmlEscape(scenario)}"/>${events[0]?.customer ? `
+      <string key="customer" value="${xmlEscape(events[0].customer)}"/>` : ""}
 ${items}
     </trace>`;
     })
