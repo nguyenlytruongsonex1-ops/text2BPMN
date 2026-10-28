@@ -1,7 +1,8 @@
 import { translatePreferPython, type EngineResult } from "./engine.server";
 import { asLang, type Lang } from "./lang";
 import type { DiagramFile } from "./translate";
-import { checkIr } from "./ircheck";
+import { checkIr, mergeStarts } from "./ircheck";
+import { SYSTEMS, detectLang } from "./prompts";
 
 const DRAFT_MODEL = "grok-4.20-0309-non-reasoning";
 const REPAIR_MODEL = "grok-4.5";
@@ -15,101 +16,6 @@ export type StudioResult = {
   error: string | null;
   attempts?: number[]; // error count of each LLM attempt (first draft, then retries)
 };
-
-const SYSTEM = `Output text IR for basic BPMN only. No XML, no markdown, no explanation. Keep labels in the language of the description: English text gives English labels, even though the example below is Vietnamese.
-
-Bạn chỉ xuất IR văn bản cho BPMN cơ bản. Không XML, không markdown, không giải thích.
-
-Mỗi dòng một lệnh (<ma> là mã bước do bạn đặt, KHÔNG viết chữ "id"):
-process "Tên quy trình"
-lane "Vai trò"
-start <ma> "Nhãn" lane "Vai trò"
-end <ma> "Nhãn" lane "Vai trò"
-task <ma> "Nhãn" lane "Vai trò"
-user <ma> "Nhãn" lane "Vai trò"
-service <ma> "Nhãn" lane "Vai trò"
-xor <ma> "Câu hỏi?" lane "Vai trò"
-and <ma> "Nhãn" lane "Vai trò"
-<ma_nguon> -> <ma_dich> "Nhãn nhánh"
-
-Quy tắc:
-- Nhiều quy trình trong một văn bản thì mỗi quy trình bắt đầu bằng một dòng process.
-- Mã bước là duy nhất, chỉ gồm chữ không dấu, số và _ (ví dụ s1, kiem_tra, g_dat). Nhãn giữ ngôn ngữ của người dùng, đặt trong ngoặc kép. Thoát " bằng \\".
-- Mỗi dòng bước PHẢI bắt đầu bằng loại (start/end/task/user/service/xor/and), không bao giờ bắt đầu bằng mã.
-- Khai báo mọi bước trước, rồi mới viết luồng. Luồng chỉ dùng mã đã khai báo, không dùng nhãn, không nối một bước với chính nó.
-- user: việc do người làm. service: việc do hệ thống làm. task: việc chung.
-- xor khi rẽ loại trừ: mỗi luồng ra khỏi xor phải có nhãn điều kiện ngắn ("Có", "Không"...). Các nhánh xor gặp lại nhau thì hội tụ bằng một xor khác, KHÔNG bao giờ bằng and.
-- and khi làm song song: các nhánh and phải hội tụ ở một and khác trước khi đi tiếp. Luồng của and không cần nhãn.
-- Mọi mã dùng trong luồng PHẢI được khai báo trước là một bước hoặc gateway (không nối tới mã chưa khai báo).
-- Chỉ gateway mới rẽ nhánh: task/user/service/start có TỐI ĐA một luồng ra. Muốn rẽ thì nối bước đó tới một xor/and.
-- xor = chọn ĐÚNG MỘT nhánh (loại trừ, ví dụ "Còn hàng?" -> "Có"/"Hết hàng"). Việc làm song song (ví dụ soạn hàng và xuất hóa đơn cùng lúc) phải dùng and tách + and gộp, KHÔNG dùng xor.
-- Lặp lại/làm lại: nối luồng từ nhánh xor quay về bước trước đó (không cần gateway mới).
-- Đúng một start. MỌI nhánh phải đi tới một end: mỗi luồng ra của xor/and (kể cả nhánh lỗi như "Báo lỗi cho khách", "Hủy đơn") cuối cùng phải nối tới một end. Không để bước nào cụt (bước không phải end mà không có luồng ra). Nhánh kết thúc khác nhau thì dùng end riêng có nhãn rõ.
-- Có vai trò thì khai báo lane và gắn lane cho từng bước. Không có vai trò thì bỏ lane.
-- Không thêm bước ngoài mô tả. Tối đa 30 bước mỗi quy trình.
-- Nhãn theo ngôn ngữ của mô tả (mô tả tiếng Anh thì nhãn tiếng Anh). Mã bước vẫn không dấu.
-- Mơ hồ thì chọn cách diễn giải ngắn nhất.
-
-Ví dụ 2 (xor chọn một nhánh, bên trong nhánh "Có" là and song song):
-process "Xử lý đơn hàng"
-lane "Hệ thống"
-lane "Kho"
-lane "Kế toán"
-start s1 "Nhận đơn" lane "Hệ thống"
-service kiem_tra "Kiểm tra tồn kho" lane "Hệ thống"
-xor g_con "Còn hàng?" lane "Hệ thống"
-and g_tach "Tách song song" lane "Hệ thống"
-user soan "Soạn hàng" lane "Kho"
-user hoa_don "Xuất hóa đơn" lane "Kế toán"
-and g_gop "Gộp song song" lane "Hệ thống"
-user giao "Giao hàng" lane "Kho"
-service bao_loi "Báo hết hàng cho khách" lane "Hệ thống"
-end e1 "Đã giao" lane "Kho"
-end e2 "Đã hủy" lane "Hệ thống"
-s1 -> kiem_tra
-kiem_tra -> g_con
-g_con -> g_tach "Có"
-g_con -> bao_loi "Hết hàng"
-g_tach -> soan
-g_tach -> hoa_don
-soan -> g_gop
-hoa_don -> g_gop
-g_gop -> giao
-giao -> e1
-bao_loi -> e2
-
-Ví dụ:
-process "Duyệt đơn nghỉ phép"
-lane "Nhân viên"
-lane "Quản lý"
-start s1 "Có nhu cầu nghỉ" lane "Nhân viên"
-user nop_don "Nộp đơn nghỉ phép" lane "Nhân viên"
-and g_song "Tách song song" lane "Quản lý"
-user xem_lich "Xem lịch nhóm" lane "Quản lý"
-service tra_phep "Tra số ngày phép" lane "Quản lý"
-and g_hop "Gộp song song" lane "Quản lý"
-xor g_duyet "Duyệt đơn?" lane "Quản lý"
-user sua_don "Sửa đơn" lane "Nhân viên"
-service ghi_nhan "Ghi nhận ngày nghỉ" lane "Quản lý"
-user bao_tu_choi "Báo từ chối cho nhân viên" lane "Quản lý"
-end e1 "Đã duyệt" lane "Quản lý"
-end e2 "Bị từ chối" lane "Nhân viên"
-s1 -> nop_don
-nop_don -> g_song
-g_song -> xem_lich
-g_song -> tra_phep
-xem_lich -> g_hop
-tra_phep -> g_hop
-g_hop -> g_duyet
-g_duyet -> ghi_nhan "Đồng ý"
-g_duyet -> sua_don "Cần sửa"
-g_duyet -> bao_tu_choi "Từ chối"
-sua_don -> nop_don
-ghi_nhan -> e1
-bao_tu_choi -> e2
-
-Tự kiểm tra trước khi in: mỗi dòng bước có loại ở đầu; mã duy nhất và không phải "id"; mọi luồng dùng mã đã khai báo; không luồng tự thân; mọi nhánh xor có nhãn; xor hội tụ bằng xor, and bằng and; đúng một start; mọi nhánh (kể cả nhánh lỗi/hủy) kết thúc ở end; không bước nào ngoài end thiếu luồng ra; mọi mã trong luồng đã khai báo; bước không phải gateway có tối đa một luồng ra; nhánh xor không gộp ở and (song song thì dùng and tách/gộp).
-Chỉ in IR.`;
 
 function asText(content: unknown): string {
   if (typeof content === "string") return content;
@@ -199,7 +105,7 @@ async function askModel(
         max_tokens: 1800,
         ...(openRouterKey ? { reasoning: { enabled: false } } : {}),
         messages: [
-          { role: "system", content: SYSTEM },
+          { role: "system", content: SYSTEMS[lang] },
           { role: "user", content: user },
         ],
       }),
@@ -253,7 +159,8 @@ export async function runTranslate(ir: string, lang: Lang = "vi"): Promise<Studi
 }
 
 export async function buildFromDescription(text: string, langInput?: unknown): Promise<StudioResult> {
-  const lang = asLang(langInput);
+  void asLang(langInput);
+  const lang = detectLang(text); // prompt, retries and labels follow the description's language
   const note = API_COPY[lang];
   const drafted = await askModel(note.draft(text), DRAFT_MODEL, lang);
   if (!drafted.ok) {
@@ -269,7 +176,7 @@ export async function buildFromDescription(text: string, langInput?: unknown): P
     }
   }
   const problems = (candidate: string, result: EngineResult) => [
-    ...checkIr(candidate),
+    ...checkIr(candidate, lang),
     ...(result.ok ? result.diagrams.flatMap((d) => d.warnings) : [result.error]),
   ];
   let errors = problems(ir, translated);
@@ -286,6 +193,18 @@ export async function buildFromDescription(text: string, langInput?: unknown): P
       ir = fixedIr;
       translated = retry;
       errors = retryErrors;
+    }
+  }
+  // Safety net: several starts left after retries -> one start + xor.
+  const merged = mergeStarts(ir, lang);
+  if (merged !== ir) {
+    const again = await translatePreferPython(merged, lang);
+    if (again.ok) {
+      ir = merged;
+      translated = again;
+      translated.diagrams[0]?.warnings.push(
+        lang === "vi" ? "Mô hình có nhiều start — đã gộp thành một start + xor." : "Several starts — merged into one start + xor.",
+      );
     }
   }
   return { ...pack(ir, translated), attempts };

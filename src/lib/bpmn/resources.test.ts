@@ -1,3 +1,5 @@
+import { detectLang } from "./prompts.ts";
+import { checkIr as checkIrV3, mergeStarts } from "./ircheck.ts";
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { applyPreset, defaultSemantics, parseBpmn, simulate, toCsv, toXes } from "./sim.ts";
@@ -252,4 +254,29 @@ o -> e3`;
     const r = simulate(g, { scenario: "x", cases: 60, ...applyPreset(g, "edge") });
     assert.deepEqual(verifyLog(g, r.rows).errors, []);
   });
+});
+
+it("v3: detectLang picks vi/en from diacritics", () => {
+  assert.equal(detectLang("Khách hàng gửi đơn, nhân viên kiểm tra và duyệt."), "vi");
+  assert.equal(detectLang("The customer sends an order and the clerk checks it."), "en");
+});
+
+it("v3: parallel branches merging into a task without and join are flagged", () => {
+  const ir = `start s "S"\nand a "Split"\ntask x "X"\ntask y "Y"\ntask z "Z"\nend e "E"\ns -> a\na -> x\na -> y\nx -> z\ny -> z\nz -> e`;
+  const errs = checkIrV3(ir, "en");
+  assert.ok(errs.some((e) => e.includes("«Z» (z)") && e.includes("and join")), errs.join("|"));
+  const ok = `start s "S"\nand a "Split"\ntask x "X"\ntask y "Y"\nand j "Join"\ntask z "Z"\nend e "E"\ns -> a\na -> x\na -> y\nx -> j\ny -> j\nj -> z\nz -> e`;
+  assert.deepEqual(checkIrV3(ok, "en"), []);
+});
+
+it("v3: xor loop back into a task is not flagged as parallel merge", () => {
+  const ir = `start s "S"\ntask t "T"\nxor g "OK?"\nend e "E"\ns -> t\nt -> g\ng -> t "No"\ng -> e "Yes"`;
+  assert.deepEqual(checkIrV3(ir), []);
+});
+
+it("v3: several starts get a fix hint and mergeStarts fixes them", () => {
+  const ir = `start a "Bill A"\nstart b "Bill B"\ntask t "Pay"\nend e "Done"\na -> t\nb -> t\nt -> e`;
+  assert.ok(checkIrV3(ir, "en").some((e) => e.includes("Which case?")));
+  const fixed = mergeStarts(ir, "en");
+  assert.deepEqual(checkIrV3(fixed, "en"), []);
 });
