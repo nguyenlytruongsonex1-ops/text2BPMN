@@ -135,7 +135,7 @@ export function validateFeatures(raw: unknown, ir: string): { semantics: Partial
         dropped.push(`branches.${gid}`);
         continue;
       }
-      const ok = Object.entries(m).filter(([t, p]) => targets.has(t) && num(p, 0, 100) !== null) as [string, number][];
+      const ok = Object.entries(m).filter(([t, p]) => targets.has(t) && steps.has(t) && num(p, 0, 100) !== null) as [string, number][];
       const sum = ok.reduce((a, [, p]) => a + p, 0);
       if (ok.length !== Object.keys(m).length) dropped.push(`branches.${gid}.*`);
       if (!ok.length || sum <= 0) continue;

@@ -317,6 +317,9 @@ it("split: validateFeatures keeps valid entries and drops bad ids/ranges", () =>
   for (const d of ["roles.Ghost", "roles.System", "minutes.nope", "minutes.ship", "rework.fix", "branches.check", "bottlenecks.*"])
     assert.ok(report.dropped.includes(d), d);
   assert.equal(validateFeatures("x", FEAT_IR).report.parsed, false);
+  // flow to an undeclared target must not crash
+  const broken = validateFeatures({ branches: { g: { ghost: 1, ship: 1 } } }, FEAT_IR + "\ng -> ghost");
+  assert.deepEqual(broken.semantics.branches, { "OK?": { Ship: 1 } });
 });
 
 it("split: features drive applyPreset and simulation still verifies", () => {
