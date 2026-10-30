@@ -27,6 +27,7 @@ export type Preset = "happy" | "edge";
 export type LogRow = {
   caseId: string;
   activity: string;
+  ready: string;
   start: string;
   end: string;
   resource: string;
@@ -558,7 +559,8 @@ export function simulate(
         ? Math.max(0, Math.min(80, input.rework[node.id] ?? (sem.rework?.[node.label] ?? 0) * 100)) / 100
         : 0;
       const work = WORK.has(node.kind);
-      const slot = work ? assign(cs, node.role, time) : { who: "", at: time, hold: false };
+      let ready = time;
+      const slot = work ? assign(cs, node.role, ready) : { who: "", at: ready, hold: false };
       time = slot.at;
       while (again && repeats < 5) {
         const minutes = Math.max(0, input.minutes[node.id] ?? sem.minutes?.[node.label] ?? node.minutes);
@@ -567,6 +569,7 @@ export function simulate(
         rows.push({
           caseId,
           activity: node.label,
+          ready: csvStamp(ready),
           start: csvStamp(time),
           end: csvStamp(end),
           resource: slot.who,
@@ -582,6 +585,7 @@ export function simulate(
         cs.first = Math.min(cs.first, time);
         cs.last = Math.max(cs.last, end);
         time = end;
+        ready = end;
         repeats += 1;
         again = work && repeats < 5 && reworkRng[token.c]!() < rework;
       }
@@ -709,9 +713,11 @@ function paceBars(values: number[]): PaceBar[] {
 }
 
 export function toCsv(rows: LogRow[]) {
-  const header = "Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type";
+  const header = "Case_ID,Activity,Ready_Timestamp,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type";
   const lines = rows.map((row) =>
-    [row.caseId, row.activity, row.start, row.end, row.resource, row.role ?? "", row.customer ?? "", row.scenario].map(csvEscape).join(","),
+    [row.caseId, row.activity, row.ready, row.start, row.end, row.resource, row.role ?? "", row.customer ?? "", row.scenario]
+      .map(csvEscape)
+      .join(","),
   );
   return [header, ...lines].join("\n");
 }
@@ -734,6 +740,11 @@ export function toXes(rows: LogRow[], scenario: string) {
     .map(([caseId, events]) => {
       const items = events
         .flatMap((event) => [
+          `      <event>
+        <string key="concept:name" value="${xmlEscape(event.activity)}"/>
+        <string key="lifecycle:transition" value="schedule"/>
+        <date key="time:timestamp" value="${event.ready.replace(" ", "T")}Z"/>${orgAttrs(event)}
+      </event>`,
           `      <event>
         <string key="concept:name" value="${xmlEscape(event.activity)}"/>
         <string key="lifecycle:transition" value="start"/>
