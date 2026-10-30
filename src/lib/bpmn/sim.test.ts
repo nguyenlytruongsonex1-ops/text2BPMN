@@ -69,9 +69,33 @@ describe("bpmn simulation", () => {
     assert.ok(edgeYes && edgeYes.share >= 80);
     assert.deepEqual(edgeParams.probability, happyParams.probability);
     assert.equal(happy.completed, 200);
-    assert.match(toCsv(happy.rows), /^Case_ID,Activity,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type/);
+    assert.match(
+      toCsv(happy.rows),
+      /^Case_ID,Activity,Ready_Timestamp,Start_Timestamp,End_Timestamp,Resource,Role,Customer,Scenario_Type/,
+    );
+    assert.ok(happy.rows.every((row) => row.ready <= row.start));
     assert.match(toXes(happy.rows, "Happy"), /xes.version="1.0"/);
+    assert.match(toXes(happy.rows, "Happy"), /lifecycle:transition" value="schedule"/);
     assert.match(toXes(happy.rows, "Happy"), /lifecycle:transition" value="complete"/);
+  });
+
+  it("records queue waiting before a constrained resource starts work", () => {
+    const graph = parseBpmn(LEAVE);
+    const semantics = {
+      roles: { Employee: ["E1"], Manager: ["M1"], Unassigned: ["U1"] },
+      unlimited: [],
+      rework: {},
+    };
+    const params = applyPreset(graph, "happy", semantics);
+    const run = simulate(graph, {
+      scenario: "Queue",
+      cases: 10,
+      ...params,
+      arrival: 0.1,
+      semantics,
+    });
+    assert.ok(run.rows.every((row) => row.ready <= row.start));
+    assert.ok(run.rows.some((row) => row.ready < row.start));
   });
 
   it("runs parallel branches and joins before the end", () => {
