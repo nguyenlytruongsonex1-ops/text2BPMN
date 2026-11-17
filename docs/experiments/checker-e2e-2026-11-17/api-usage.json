@@ -1,0 +1,1065 @@
+{
+  "calls": 25,
+  "reportedCostUsd": 0.00409998,
+  "unknownCostCalls": 1,
+  "unknownCostConservativeReservationUsd": 0.016778,
+  "requests": [
+    {
+      "index": 1,
+      "fixtureId": "application-sequence",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "6c16cf69a0cbfe87319908ab07709373e39a8c2caf9666cbcec13f0327bc597a",
+      "promptBytes": 4898,
+      "admissionReservationUsd": 0.01669,
+      "costUsd": 0.00020355,
+      "httpStatus": 200,
+      "latencyMs": 3200,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 1243,
+        "completion_tokens": 76,
+        "total_tokens": 1319,
+        "cost": 0.00020355,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00020355,
+          "upstream_inference_prompt_cost": 0.00018645,
+          "upstream_inference_completions_cost": 0.0000171
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 2,
+      "fixtureId": "application-sequence",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "6afb89714ee53adcd75062bdf1fb0e3b4333ebc97d8dd8c88e891265419f7389",
+      "promptBytes": 1455,
+      "admissionReservationUsd": 0.013246999999999998,
+      "costUsd": 0.0000762,
+      "httpStatus": 200,
+      "latencyMs": 3100,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 379,
+        "completion_tokens": 86,
+        "total_tokens": 465,
+        "cost": 0.0000762,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0000762,
+          "upstream_inference_prompt_cost": 0.00005685,
+          "upstream_inference_completions_cost": 0.00001935
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 3,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "ee34a93cd48eb28e97c0c30bc05ad8c5e6c629b2f6cde91462011e5b673d1495",
+      "promptBytes": 6186,
+      "admissionReservationUsd": 0.016778,
+      "costUsd": null,
+      "httpStatus": 200,
+      "latencyMs": 3084,
+      "parseError": true
+    },
+    {
+      "index": 4,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "affc3d3f9820f7695318d7d1ac6aa073a6a30b818a8928ffe02cdd87a6fd26da",
+      "promptBytes": 6590,
+      "admissionReservationUsd": 0.017182,
+      "costUsd": 0.0000459,
+      "httpStatus": 200,
+      "latencyMs": 3103,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 1967,
+        "completion_tokens": 164,
+        "total_tokens": 2131,
+        "cost": 0.0000459,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0000459,
+          "upstream_inference_prompt_cost": 0.00003934,
+          "upstream_inference_completions_cost": 0.00000656
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 5,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "112ca2fc167740790cb23851a9711724c7bdfd0700ae5e54178c1b16f1b87e3a",
+      "promptBytes": 6803,
+      "admissionReservationUsd": 0.017395,
+      "costUsd": 0.0000467,
+      "httpStatus": 200,
+      "latencyMs": 3085,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2001,
+        "completion_tokens": 167,
+        "total_tokens": 2168,
+        "cost": 0.0000467,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0000467,
+          "upstream_inference_prompt_cost": 0.00004002,
+          "upstream_inference_completions_cost": 0.00000668
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 6,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "ee34a93cd48eb28e97c0c30bc05ad8c5e6c629b2f6cde91462011e5b673d1495",
+      "promptBytes": 6186,
+      "admissionReservationUsd": 0.016778,
+      "costUsd": 0.00020528,
+      "httpStatus": 200,
+      "latencyMs": 2879,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2006,
+        "completion_tokens": 160,
+        "total_tokens": 2166,
+        "cost": 0.00020528,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00020528,
+          "upstream_inference_prompt_cost": 0.00016048,
+          "upstream_inference_completions_cost": 0.0000448
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 7,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "affc3d3f9820f7695318d7d1ac6aa073a6a30b818a8928ffe02cdd87a6fd26da",
+      "promptBytes": 6590,
+      "admissionReservationUsd": 0.017182,
+      "costUsd": 0.00019728,
+      "httpStatus": 200,
+      "latencyMs": 3115,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2074,
+        "completion_tokens": 112,
+        "total_tokens": 2186,
+        "cost": 0.00019728,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00019728,
+          "upstream_inference_prompt_cost": 0.00016592,
+          "upstream_inference_completions_cost": 0.00003136
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 8,
+      "fixtureId": "application-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "112ca2fc167740790cb23851a9711724c7bdfd0700ae5e54178c1b16f1b87e3a",
+      "promptBytes": 6803,
+      "admissionReservationUsd": 0.017395,
+      "costUsd": 0.00021344,
+      "httpStatus": 200,
+      "latencyMs": 3090,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2108,
+        "completion_tokens": 160,
+        "total_tokens": 2268,
+        "cost": 0.00021344,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00021344,
+          "upstream_inference_prompt_cost": 0.00016864,
+          "upstream_inference_completions_cost": 0.0000448
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 9,
+      "fixtureId": "application-xor",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "e9799d18663dc1bd9c9bade2077525bfb03d395b9e12a4f38a57c7a46c9f2a05",
+      "promptBytes": 5128,
+      "admissionReservationUsd": 0.01692,
+      "costUsd": 0.000227175,
+      "httpStatus": 200,
+      "latencyMs": 3082,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 1285,
+        "completion_tokens": 153,
+        "total_tokens": 1438,
+        "cost": 0.000227175,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.000227175,
+          "upstream_inference_prompt_cost": 0.00019275,
+          "upstream_inference_completions_cost": 0.000034425
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 10,
+      "fixtureId": "application-xor",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "3ddfceeb0f1a9d22627bb0ada40991ef880301346e861ecbb88bce1c448bd780",
+      "promptBytes": 1877,
+      "admissionReservationUsd": 0.013669,
+      "costUsd": 0.000115125,
+      "httpStatus": 200,
+      "latencyMs": 3087,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 463,
+        "completion_tokens": 203,
+        "total_tokens": 666,
+        "cost": 0.000115125,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.000115125,
+          "upstream_inference_prompt_cost": 0.00006945,
+          "upstream_inference_completions_cost": 0.000045675
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 11,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "a4aeaad7f36e16423b6e852575f9e80424569e2f2e418b6830c01946651fd6bb",
+      "promptBytes": 11301,
+      "admissionReservationUsd": 0.021893,
+      "costUsd": 0.0000775,
+      "httpStatus": 200,
+      "latencyMs": 3086,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3519,
+        "completion_tokens": 178,
+        "total_tokens": 3697,
+        "cost": 0.0000775,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0000775,
+          "upstream_inference_prompt_cost": 0.00007038,
+          "upstream_inference_completions_cost": 0.00000712
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 12,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "0e4e056685f453d376991aa2b6c23ab1c5e90a26f53962816c084915d52c3cf7",
+      "promptBytes": 11705,
+      "admissionReservationUsd": 0.022297,
+      "costUsd": 0.00007906,
+      "httpStatus": 200,
+      "latencyMs": 3252,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3587,
+        "completion_tokens": 183,
+        "total_tokens": 3770,
+        "cost": 0.00007906,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00007906,
+          "upstream_inference_prompt_cost": 0.00007174,
+          "upstream_inference_completions_cost": 0.00000732
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 13,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "3e4243995ff8d042a136823ccf8ff06bd9845c8e0a47373d72fc231e42c6b414",
+      "promptBytes": 11918,
+      "admissionReservationUsd": 0.02251,
+      "costUsd": 0.00009334,
+      "httpStatus": 200,
+      "latencyMs": 3086,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3621,
+        "completion_tokens": 523,
+        "total_tokens": 4144,
+        "cost": 0.00009334,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00009334,
+          "upstream_inference_prompt_cost": 0.00007242,
+          "upstream_inference_completions_cost": 0.00002092
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 14,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "a4aeaad7f36e16423b6e852575f9e80424569e2f2e418b6830c01946651fd6bb",
+      "promptBytes": 11301,
+      "admissionReservationUsd": 0.021893,
+      "costUsd": 0.0003674,
+      "httpStatus": 200,
+      "latencyMs": 3085,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3749,
+        "completion_tokens": 241,
+        "total_tokens": 3990,
+        "cost": 0.0003674,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0003674,
+          "upstream_inference_prompt_cost": 0.00029992,
+          "upstream_inference_completions_cost": 0.00006748
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 15,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "0e4e056685f453d376991aa2b6c23ab1c5e90a26f53962816c084915d52c3cf7",
+      "promptBytes": 11705,
+      "admissionReservationUsd": 0.022297,
+      "costUsd": 0.00035548,
+      "httpStatus": 200,
+      "latencyMs": 3133,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3817,
+        "completion_tokens": 179,
+        "total_tokens": 3996,
+        "cost": 0.00035548,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00035548,
+          "upstream_inference_prompt_cost": 0.00030536,
+          "upstream_inference_completions_cost": 0.00005012
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 16,
+      "fixtureId": "application-xor",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "3e4243995ff8d042a136823ccf8ff06bd9845c8e0a47373d72fc231e42c6b414",
+      "promptBytes": 11918,
+      "admissionReservationUsd": 0.02251,
+      "costUsd": 0.000368,
+      "httpStatus": 200,
+      "latencyMs": 3100,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 3851,
+        "completion_tokens": 214,
+        "total_tokens": 4065,
+        "cost": 0.000368,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.000368,
+          "upstream_inference_prompt_cost": 0.00030808,
+          "upstream_inference_completions_cost": 0.00005992
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 17,
+      "fixtureId": "order-sequence",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "22897413f39b0854b3b3b4198dabaceac9291afc30f8f0369f89853a627dcca7",
+      "promptBytes": 4972,
+      "admissionReservationUsd": 0.016764,
+      "costUsd": 0.0001995,
+      "httpStatus": 200,
+      "latencyMs": 3070,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 1258,
+        "completion_tokens": 48,
+        "total_tokens": 1306,
+        "cost": 0.0001995,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0001995,
+          "upstream_inference_prompt_cost": 0.0001887,
+          "upstream_inference_completions_cost": 0.0000108
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 18,
+      "fixtureId": "order-sequence",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "5c9b18f56a1f949e94e8c7782151b9e3d8219f614331d0734933030e4a8b2347",
+      "promptBytes": 5415,
+      "admissionReservationUsd": 0.017207,
+      "costUsd": 0.000221175,
+      "httpStatus": 200,
+      "latencyMs": 3083,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 1362,
+        "completion_tokens": 75,
+        "total_tokens": 1437,
+        "cost": 0.000221175,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.000221175,
+          "upstream_inference_prompt_cost": 0.0002043,
+          "upstream_inference_completions_cost": 0.000016875
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 19,
+      "fixtureId": "order-sequence",
+      "stage": "generation",
+      "requestedModel": "qwen/qwen3.5-9b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0.2,
+      "maxTokens": 1800,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "446cae05821cc3965e9a3d37e2c7eecec456eed6bbaf52001f3781d2ba6cfc7a",
+      "promptBytes": 1617,
+      "admissionReservationUsd": 0.013409,
+      "costUsd": 0.000083175,
+      "httpStatus": 200,
+      "latencyMs": 3086,
+      "effectiveModel": "qwen/qwen3.5-9b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 418,
+        "completion_tokens": 91,
+        "total_tokens": 509,
+        "cost": 0.000083175,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.000083175,
+          "upstream_inference_prompt_cost": 0.0000627,
+          "upstream_inference_completions_cost": 0.000020475
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 20,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "9aaa0f5ea17faa01697f2325843a77526af5e6f7ec80d4cd648d9c81c649c30a",
+      "promptBytes": 7143,
+      "admissionReservationUsd": 0.017735,
+      "costUsd": 0.00005478,
+      "httpStatus": 200,
+      "latencyMs": 3079,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2153,
+        "completion_tokens": 293,
+        "total_tokens": 2446,
+        "cost": 0.00005478,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00005478,
+          "upstream_inference_prompt_cost": 0.00004306,
+          "upstream_inference_completions_cost": 0.00001172
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 21,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "01ebd39df7e54d08b6e54a9c6043fef017f784a792fb763b20c50e5a2f669c6b",
+      "promptBytes": 7547,
+      "admissionReservationUsd": 0.018139,
+      "costUsd": 0.00005458,
+      "httpStatus": 200,
+      "latencyMs": 3074,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2221,
+        "completion_tokens": 254,
+        "total_tokens": 2475,
+        "cost": 0.00005458,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00005458,
+          "upstream_inference_prompt_cost": 0.00004442,
+          "upstream_inference_completions_cost": 0.00001016
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 22,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "meta-llama/llama-3.1-8b-instruct",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": null,
+      "promptSha256": "b7bac6c915e48bd1a825475e016ca0566772233fe5950278606a7797e85643d3",
+      "promptBytes": 7760,
+      "admissionReservationUsd": 0.018352,
+      "costUsd": 0.00006858,
+      "httpStatus": 200,
+      "latencyMs": 3098,
+      "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2255,
+        "completion_tokens": 587,
+        "total_tokens": 2842,
+        "cost": 0.00006858,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00006858,
+          "upstream_inference_prompt_cost": 0.0000451,
+          "upstream_inference_completions_cost": 0.00002348
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 23,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "9aaa0f5ea17faa01697f2325843a77526af5e6f7ec80d4cd648d9c81c649c30a",
+      "promptBytes": 7143,
+      "admissionReservationUsd": 0.017735,
+      "costUsd": 0.00024924,
+      "httpStatus": 200,
+      "latencyMs": 3115,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2286,
+        "completion_tokens": 237,
+        "total_tokens": 2523,
+        "cost": 0.00024924,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00024924,
+          "upstream_inference_prompt_cost": 0.00018288,
+          "upstream_inference_completions_cost": 0.00006636
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 24,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "01ebd39df7e54d08b6e54a9c6043fef017f784a792fb763b20c50e5a2f669c6b",
+      "promptBytes": 7547,
+      "admissionReservationUsd": 0.018139,
+      "costUsd": 0.00021464,
+      "httpStatus": 200,
+      "latencyMs": 2494,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2354,
+        "completion_tokens": 94,
+        "total_tokens": 2448,
+        "cost": 0.00021464,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00021464,
+          "upstream_inference_prompt_cost": 0.00018832,
+          "upstream_inference_completions_cost": 0.00002632
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    },
+    {
+      "index": 25,
+      "fixtureId": "order-sequence",
+      "stage": "checker-ablation",
+      "requestedModel": "qwen/qwen3-32b",
+      "providerRequested": "DeepInfra",
+      "temperature": 0,
+      "maxTokens": 1200,
+      "reasoning": {
+        "enabled": false
+      },
+      "promptSha256": "b7bac6c915e48bd1a825475e016ca0566772233fe5950278606a7797e85643d3",
+      "promptBytes": 7760,
+      "admissionReservationUsd": 0.018352,
+      "costUsd": 0.00028288,
+      "httpStatus": 200,
+      "latencyMs": 4363,
+      "effectiveModel": "qwen/qwen3-32b",
+      "provider": "DeepInfra",
+      "usage": {
+        "prompt_tokens": 2388,
+        "completion_tokens": 328,
+        "total_tokens": 2716,
+        "cost": 0.00028288,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00028288,
+          "upstream_inference_prompt_cost": 0.00019104,
+          "upstream_inference_completions_cost": 0.00009184
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finishReason": "stop"
+    }
+  ]
+}

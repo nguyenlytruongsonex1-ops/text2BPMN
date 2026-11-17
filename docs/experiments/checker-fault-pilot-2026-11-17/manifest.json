@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "startedAt": "2026-11-17T14:13:21.124Z",
+  "maxCalls": 10,
+  "budgetUsd": 0.5,
+  "models": [
+    "meta-llama/llama-3.1-8b-instruct",
+    "qwen/qwen3-32b"
+  ],
+  "provider": "DeepInfra",
+  "sourceSnapshotsAtStart": {
+    "capturedAt": "2026-11-17T14:13:21.125Z",
+    "files": {
+      "scripts/checker-fault-pilot.mjs": {
+        "sha256": "fd9a81e2780422d0fdc03c4c4ce3cf3e2176644b116986b1379fdffea92adcbf",
+        "bytes": 16204,
+        "mtime": "2026-11-17T14:13:00.272Z"
+      },
+      "scripts/checker-e2e.mjs": {
+        "sha256": "076283f78307b60bc43e6d2ceed5664dd6b1cf34489fb6757af5534e184740f8",
+        "bytes": 24869,
+        "mtime": "2026-11-17T14:07:31.108Z"
+      },
+      "src/lib/bpmn/checker.server.ts": {
+        "sha256": "9ae139d3400b00e8c2fc75b0d9e40445746e0972d57108c3940c0033ac1ac732",
+        "bytes": 14526,
+        "mtime": "2026-11-17T14:00:19.928Z"
+      },
+      "src/lib/bpmn/checker.ts": {
+        "sha256": "9e0e4cd69551cc08797ef2dff31b5b8216d2f4d48aee853cbf228e88a5192de8",
+        "bytes": 9387,
+        "mtime": "2026-11-17T13:58:37.112Z"
+      },
+      "docs/checker-e2e-fixtures.json": {
+        "sha256": "1b43e3a0fb85a4640f6d0268bb13058599d8e58676c853878ecc66522e3e1350",
+        "bytes": 3102,
+        "mtime": "2026-11-17T14:03:00.011Z"
+      },
+      "package-lock.json": {
+        "sha256": "4824dccd137b69f77bea183dd1d03db2f1c228e5d937dcb1113866beadf809c7",
+        "bytes": 270332,
+        "mtime": "2026-11-17T14:04:08.559Z"
+      }
+    }
+  },
+  "baseCandidateSha256": "d23ee0c171251719bf303d0bd4f87eb5cf283b2101341bba1055014ad3fd4481",
+  "mutantCandidateSha256": "561dd69690d74ff65a2450e0ba7c1ad5a4116dae62703eae863e11f10a8bd926",
+  "sourceFixtureSha256": "0765d44f3997ab93954b575b902b4460ee6a633566667bfcea2e315971f95d2d",
+  "scope": "One deterministic injected order fault, verified against two fixed source properties on a previously generated candidate. Base passing these properties does not imply whole-model correctness. Not a natural-error or model-superiority benchmark.",
+  "finishedAt": "2026-11-17T14:15:28.713Z",
+  "sourceSnapshotsAtFinish": {
+    "capturedAt": "2026-11-17T14:15:28.716Z",
+    "files": {
+      "scripts/checker-fault-pilot.mjs": {
+        "sha256": "fd9a81e2780422d0fdc03c4c4ce3cf3e2176644b116986b1379fdffea92adcbf",
+        "bytes": 16204,
+        "mtime": "2026-11-17T14:13:00.272Z"
+      },
+      "scripts/checker-e2e.mjs": {
+        "sha256": "076283f78307b60bc43e6d2ceed5664dd6b1cf34489fb6757af5534e184740f8",
+        "bytes": 24869,
+        "mtime": "2026-11-17T14:07:31.108Z"
+      },
+      "src/lib/bpmn/checker.server.ts": {
+        "sha256": "9ae139d3400b00e8c2fc75b0d9e40445746e0972d57108c3940c0033ac1ac732",
+        "bytes": 14526,
+        "mtime": "2026-11-17T14:00:19.928Z"
+      },
+      "src/lib/bpmn/checker.ts": {
+        "sha256": "9e0e4cd69551cc08797ef2dff31b5b8216d2f4d48aee853cbf228e88a5192de8",
+        "bytes": 9387,
+        "mtime": "2026-11-17T13:58:37.112Z"
+      },
+      "docs/checker-e2e-fixtures.json": {
+        "sha256": "1b43e3a0fb85a4640f6d0268bb13058599d8e58676c853878ecc66522e3e1350",
+        "bytes": 3102,
+        "mtime": "2026-11-17T14:03:00.011Z"
+      },
+      "package-lock.json": {
+        "sha256": "4824dccd137b69f77bea183dd1d03db2f1c228e5d937dcb1113866beadf809c7",
+        "bytes": 270332,
+        "mtime": "2026-11-17T14:04:08.559Z"
+      }
+    }
+  },
+  "sourceFreezeViolations": [],
+  "sourceFreezeVerifiedAtFinish": true
+}

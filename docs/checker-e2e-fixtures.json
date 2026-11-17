@@ -1,0 +1,29 @@
+{
+  "version": "controlled-fixtures-v1",
+  "scope": "Three synthetic controlled English descriptions, not PET and not a real-business benchmark. Requirement specifications are fixed before generation; they are not checker-derived correctness labels.",
+  "fixtures": [
+    {
+      "id": "application-sequence",
+      "text": "Process an application with these exact task names. Every instance performs Receive application, then Review application, then Pay applicant, then ends. No branching, loops or parallel work are allowed.",
+      "requirements": [
+        { "id": "R1", "sourceQuote": "Every instance performs Receive application, then Review application, then Pay applicant, then ends.", "assertion": "Every complete execution contains Receive application before Review application before Pay applicant.", "oracle": { "kind": "mandatory-sequence", "labels": ["Receive application", "Review application", "Pay applicant"] } }
+      ]
+    },
+    {
+      "id": "application-xor",
+      "text": "Use these exact task names. Receive application, then choose exactly one of two routes with an exclusive gateway. The approved route performs Approve application, then Pay applicant, then ends. The rejected route performs Reject application, then Notify applicant, then ends. Never execute Pay applicant after Reject application. The route choice is provided externally; do not model data conditions, loops, timers or parallel work.",
+      "requirements": [
+        { "id": "R1", "sourceQuote": "Never execute Pay applicant after Reject application.", "assertion": "No execution containing Reject application may subsequently contain Pay applicant.", "oracle": { "kind": "forbidden-order", "labels": ["Reject application", "Pay applicant"] } },
+        { "id": "R2", "sourceQuote": "The rejected route performs Reject application, then Notify applicant, then ends.", "assertion": "Every complete execution containing Reject application must subsequently contain Notify applicant.", "oracle": { "kind": "conditional-eventual", "labels": ["Reject application", "Notify applicant"] } }
+      ]
+    },
+    {
+      "id": "order-sequence",
+      "text": "Use these exact task names in one sequential process. Every order executes Register order, then Verify order, then Dispatch order, then ends. Dispatch order must never occur before Verify order. Do not introduce branches, loops, parallel activities, timers or data conditions.",
+      "requirements": [
+        { "id": "R1", "sourceQuote": "Every order executes Register order, then Verify order, then Dispatch order, then ends.", "assertion": "Every complete execution contains Register order before Verify order before Dispatch order.", "oracle": { "kind": "mandatory-sequence", "labels": ["Register order", "Verify order", "Dispatch order"] } },
+        { "id": "R2", "sourceQuote": "Dispatch order must never occur before Verify order.", "assertion": "No complete execution reaches Dispatch order without previously executing Verify order.", "oracle": { "kind": "requires-prior", "labels": ["Dispatch order", "Verify order"] } }
+      ]
+    }
+  ]
+}

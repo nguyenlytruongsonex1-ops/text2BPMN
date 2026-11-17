@@ -1,0 +1,12 @@
+process "Order Processing"
+start s1 "Order received"
+xor g_case "Which case?"
+task register "Register order"
+task verify "Verify order"
+task dispatch "Dispatch order"
+end e1 "Order Completed"
+s1 -> g_case
+g_case -> register
+register -> verify
+verify -> dispatch
+dispatch -> e1

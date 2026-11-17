@@ -1,0 +1,9 @@
+process "Process Application"
+lane "Admin"
+start s1 "Receive application" lane "Admin"
+task t1 "Review application" lane "Admin"
+task t2 "Pay applicant" lane "Admin"
+end e1 "End" lane "Admin"
+s1 -> t1
+t1 -> t2
+t2 -> e1

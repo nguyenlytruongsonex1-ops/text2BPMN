@@ -1,0 +1,274 @@
+{
+  "method": "Paired nonparametric percentile bootstrap resampling the 36 held-out source documents as clusters; each sampled document contributes its supported-order and verified-counterexample candidates together. 20,000 replicates; fixed LCG seed 0x50455433; two-sided 95% percentile intervals. Per-document scores are averages over the two candidates. No model/candidate call is repeated.",
+  "unit": "source document (36 independent held-out documents; 72 candidates per model/condition)",
+  "replicateCount": 20000,
+  "seed": "0x50455433",
+  "estimates": {
+    "light/B0-E0": {
+      "exact": {
+        "estimate": 0.2361111111111111,
+        "lower95": 0.1388888888888889,
+        "upper95": 0.3472222222222222
+      },
+      "covered": {
+        "estimate": 0.3333333333333333,
+        "lower95": 0.20833333333333334,
+        "upper95": 0.4583333333333333
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": 0.09722222222222222,
+        "lower95": 0.041666666666666664,
+        "upper95": 0.16666666666666666
+      }
+    },
+    "light/B1-E0": {
+      "exact": {
+        "estimate": 0.3055555555555556,
+        "lower95": 0.19444444444444445,
+        "upper95": 0.4166666666666667
+      },
+      "covered": {
+        "estimate": 0.5138888888888888,
+        "lower95": 0.3888888888888889,
+        "upper95": 0.6388888888888888
+      },
+      "falsePass": {
+        "estimate": 0.1388888888888889,
+        "lower95": 0.06944444444444445,
+        "upper95": 0.20833333333333334
+      },
+      "falseFail": {
+        "estimate": 0.06944444444444445,
+        "lower95": 0.013888888888888888,
+        "upper95": 0.125
+      }
+    },
+    "light/B0-E1": {
+      "exact": {
+        "estimate": 0.1388888888888889,
+        "lower95": 0.06944444444444445,
+        "upper95": 0.2222222222222222
+      },
+      "covered": {
+        "estimate": 0.2777777777777778,
+        "lower95": 0.16666666666666666,
+        "upper95": 0.3888888888888889
+      },
+      "falsePass": {
+        "estimate": 0.09722222222222222,
+        "lower95": 0.041666666666666664,
+        "upper95": 0.16666666666666666
+      },
+      "falseFail": {
+        "estimate": 0.041666666666666664,
+        "lower95": 0,
+        "upper95": 0.09722222222222222
+      }
+    },
+    "light/B1-E1": {
+      "exact": {
+        "estimate": 0.09722222222222222,
+        "lower95": 0.041666666666666664,
+        "upper95": 0.16666666666666666
+      },
+      "covered": {
+        "estimate": 0.19444444444444445,
+        "lower95": 0.1111111111111111,
+        "upper95": 0.2777777777777778
+      },
+      "falsePass": {
+        "estimate": 0.027777777777777776,
+        "lower95": 0,
+        "upper95": 0.06944444444444445
+      },
+      "falseFail": {
+        "estimate": 0.06944444444444445,
+        "lower95": 0.013888888888888888,
+        "upper95": 0.125
+      }
+    },
+    "strong/B0-E0": {
+      "exact": {
+        "estimate": 0.9583333333333334,
+        "lower95": 0.9027777777777778,
+        "upper95": 1
+      },
+      "covered": {
+        "estimate": 0.9583333333333334,
+        "lower95": 0.9027777777777778,
+        "upper95": 1
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      }
+    },
+    "strong/B1-E0": {
+      "exact": {
+        "estimate": 0.9166666666666666,
+        "lower95": 0.8472222222222222,
+        "upper95": 0.9722222222222222
+      },
+      "covered": {
+        "estimate": 0.9444444444444444,
+        "lower95": 0.8888888888888888,
+        "upper95": 0.9861111111111112
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": 0.027777777777777776,
+        "lower95": 0,
+        "upper95": 0.06944444444444445
+      }
+    },
+    "strong/B0-E1": {
+      "exact": {
+        "estimate": 0.875,
+        "lower95": 0.8055555555555556,
+        "upper95": 0.9444444444444444
+      },
+      "covered": {
+        "estimate": 0.8888888888888888,
+        "lower95": 0.8194444444444444,
+        "upper95": 0.9583333333333334
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": 0.013888888888888888,
+        "lower95": 0,
+        "upper95": 0.041666666666666664
+      }
+    },
+    "strong/B1-E1": {
+      "exact": {
+        "estimate": 0.9027777777777778,
+        "lower95": 0.8333333333333334,
+        "upper95": 0.9583333333333334
+      },
+      "covered": {
+        "estimate": 0.9027777777777778,
+        "lower95": 0.8333333333333334,
+        "upper95": 0.9583333333333334
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      }
+    }
+  },
+  "pairedDeltas": {
+    "strong-minus-light/B0-E0": {
+      "exact": {
+        "estimate": 0.7222222222222222,
+        "lower95": 0.6111111111111112,
+        "upper95": 0.8194444444444444
+      },
+      "covered": {
+        "estimate": 0.625,
+        "lower95": 0.5,
+        "upper95": 0.7361111111111112
+      },
+      "falsePass": {
+        "estimate": 0,
+        "lower95": 0,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": -0.09722222222222222,
+        "lower95": -0.16666666666666666,
+        "upper95": -0.041666666666666664
+      }
+    },
+    "strong-minus-light/B1-E0": {
+      "exact": {
+        "estimate": 0.6111111111111112,
+        "lower95": 0.5,
+        "upper95": 0.7222222222222222
+      },
+      "covered": {
+        "estimate": 0.4305555555555556,
+        "lower95": 0.3055555555555556,
+        "upper95": 0.5555555555555556
+      },
+      "falsePass": {
+        "estimate": -0.1388888888888889,
+        "lower95": -0.20833333333333334,
+        "upper95": -0.06944444444444445
+      },
+      "falseFail": {
+        "estimate": -0.041666666666666664,
+        "lower95": -0.1111111111111111,
+        "upper95": 0.027777777777777776
+      }
+    },
+    "strong-minus-light/B0-E1": {
+      "exact": {
+        "estimate": 0.7361111111111112,
+        "lower95": 0.625,
+        "upper95": 0.8472222222222222
+      },
+      "covered": {
+        "estimate": 0.6111111111111112,
+        "lower95": 0.4722222222222222,
+        "upper95": 0.7361111111111112
+      },
+      "falsePass": {
+        "estimate": -0.09722222222222222,
+        "lower95": -0.16666666666666666,
+        "upper95": -0.041666666666666664
+      },
+      "falseFail": {
+        "estimate": -0.027777777777777776,
+        "lower95": -0.06944444444444445,
+        "upper95": 0
+      }
+    },
+    "strong-minus-light/B1-E1": {
+      "exact": {
+        "estimate": 0.8055555555555556,
+        "lower95": 0.7083333333333334,
+        "upper95": 0.8888888888888888
+      },
+      "covered": {
+        "estimate": 0.7083333333333334,
+        "lower95": 0.6111111111111112,
+        "upper95": 0.8055555555555556
+      },
+      "falsePass": {
+        "estimate": -0.027777777777777776,
+        "lower95": -0.06944444444444445,
+        "upper95": 0
+      },
+      "falseFail": {
+        "estimate": -0.06944444444444445,
+        "lower95": -0.125,
+        "upper95": -0.013888888888888888
+      }
+    }
+  }
+}

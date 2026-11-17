@@ -19,7 +19,11 @@
     "test:bpmn": "node --experimental-strip-types --test src/lib/bpmn/sim.test.ts src/lib/bpmn/verify.test.ts src/lib/bpmn/resources.test.ts",
     "test": "npm run test:bpmn && node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/bpmn/sim.test.ts src/lib/bpmn/verify.test.ts src/lib/bpmn/resources.test.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:checker": "node --experimental-strip-types --test src/lib/bpmn/checker.test.ts",
+    "test:checker:ui": "node scripts/checker-ui-smoke.mjs",
+    "experiment:checker": "node scripts/checker-e2e.mjs",
+    "experiment:pet": "node scripts/pet-checker-benchmark.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
@@ -54,6 +58,7 @@
     "@vitejs/plugin-react": "^5.2.0",
     "better-auth": "~1.6.30",
     "bpmn-js": "^18.31.0",
+    "bpmn-moddle": "^10.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

@@ -1,0 +1,17 @@
+{
+  "protocolVersion": "pet-flow-checker-v3",
+  "status": "completed",
+  "startedAt": "2026-11-17T16:39:52.471Z",
+  "sourceUrl": "https://raw.githubusercontent.com/patriziobellan86/PETv1.1/master/PETv1.1-relations.json",
+  "sourceSha256": "bfb71816cc9782cb7197f106643935bd973a8376ca736db51e28f8e72b8d9708",
+  "casesSha256": "29b5739c30516986281561a599a45078f715ca439d1d0262c25f832ed707ffb6",
+  "scriptSha256": "d6a1954036fadd4fcfb3872a8907ab9503248f55a6bb7a2e16f607faced5e062",
+  "plannedCalls": 720,
+  "completedCalls": 720,
+  "resumed": true,
+  "transport": "openclaw-infer-local",
+  "lastCheckpointAt": "2026-11-17T17:07:19.402Z",
+  "finishedAt": "2026-11-17T17:07:19.404Z",
+  "reportedCostUsd": 0.06287318000000003,
+  "unknownCostCalls": 3
+}

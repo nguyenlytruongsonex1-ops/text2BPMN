@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://text2bpmn.app/bpmn" exporter="text2BPMN" exporterVersion="1.0">
+  <bpmn:collaboration id="P1_Collaboration_1" name="Handle Application">
+    <bpmn:participant id="P1_Participant_1" name="Handle Application" processRef="P1_Process_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="P1_Process_1" name="Handle Application" isExecutable="false">
+    <bpmn:laneSet id="P1_LaneSet_1">
+      <bpmn:lane id="P1_Lane_1" name="Admin">
+        <bpmn:flowNodeRef>P1_StartEvent_s1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_Gateway_g_route</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_Task_approve</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_ServiceTask_pay</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_Task_reject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_EndEvent_e1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P1_Lane_2" name="Applicant">
+        <bpmn:flowNodeRef>P1_UserTask_notify</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>P1_EndEvent_e2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="P1_StartEvent_s1" name="Receive application">
+      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="P1_Gateway_g_route" name="Approve or Reject?">
+      <bpmn:incoming>P1_Flow_1</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>
+      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="P1_Task_approve" name="Approve application">
+      <bpmn:incoming>P1_Flow_2</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:serviceTask id="P1_ServiceTask_pay" name="Pay applicant">
+      <bpmn:incoming>P1_Flow_4</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:task id="P1_Task_reject" name="Reject application">
+      <bpmn:incoming>P1_Flow_3</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="P1_UserTask_notify" name="Notify applicant">
+      <bpmn:incoming>P1_Flow_6</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="P1_EndEvent_e1" name="Approved">
+      <bpmn:incoming>P1_Flow_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="P1_EndEvent_e2" name="Rejected">
+      <bpmn:incoming>P1_Flow_7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="P1_Flow_1" sourceRef="P1_StartEvent_s1" targetRef="P1_Gateway_g_route" />
+    <bpmn:sequenceFlow id="P1_Flow_2" sourceRef="P1_Gateway_g_route" targetRef="P1_Task_approve" name="Approve" />
+    <bpmn:sequenceFlow id="P1_Flow_3" sourceRef="P1_Gateway_g_route" targetRef="P1_Task_reject" name="Reject" />
+    <bpmn:sequenceFlow id="P1_Flow_4" sourceRef="P1_Task_approve" targetRef="P1_ServiceTask_pay" />
+    <bpmn:sequenceFlow id="P1_Flow_5" sourceRef="P1_ServiceTask_pay" targetRef="P1_EndEvent_e1" />
+    <bpmn:sequenceFlow id="P1_Flow_6" sourceRef="P1_Task_reject" targetRef="P1_UserTask_notify" />
+    <bpmn:sequenceFlow id="P1_Flow_7" sourceRef="P1_UserTask_notify" targetRef="P1_EndEvent_e2" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="P1_BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="P1_BPMNPlane_1" bpmnElement="P1_Collaboration_1">
+      <bpmndi:BPMNShape id="P1_Participant_1_di" bpmnElement="P1_Participant_1" isHorizontal="true">
+        <dc:Bounds x="56" y="48" width="898" height="436" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Lane_1_di" bpmnElement="P1_Lane_1" isHorizontal="true">
+        <dc:Bounds x="86" y="48" width="868" height="284" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Lane_2_di" bpmnElement="P1_Lane_2" isHorizontal="true">
+        <dc:Bounds x="86" y="332" width="868" height="152" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_StartEvent_s1_di" bpmnElement="P1_StartEvent_s1">
+        <dc:Bounds x="144" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="101" y="212" width="122" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Gateway_g_route_di" bpmnElement="P1_Gateway_g_route">
+        <dc:Bounds x="260" y="165" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="228" y="219" width="115" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Task_approve_di" bpmnElement="P1_Task_approve">
+        <dc:Bounds x="390" y="84" width="164" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_ServiceTask_pay_di" bpmnElement="P1_ServiceTask_pay">
+        <dc:Bounds x="634" y="150" width="148" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Task_reject_di" bpmnElement="P1_Task_reject">
+        <dc:Bounds x="394" y="216" width="157" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_UserTask_notify_di" bpmnElement="P1_UserTask_notify">
+        <dc:Bounds x="634" y="368" width="148" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_EndEvent_e1_di" bpmnElement="P1_EndEvent_e1">
+        <dc:Bounds x="862" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="855" y="212" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_EndEvent_e2_di" bpmnElement="P1_EndEvent_e2">
+        <dc:Bounds x="862" y="390" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="855" y="430" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="P1_Flow_1_di" bpmnElement="P1_Flow_1">
+        <di:waypoint x="180" y="190" />
+        <di:waypoint x="232" y="190" />
+        <di:waypoint x="260" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_2_di" bpmnElement="P1_Flow_2">
+        <di:waypoint x="310" y="190" />
+        <di:waypoint x="362" y="190" />
+        <di:waypoint x="362" y="124" />
+        <di:waypoint x="390" y="124" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="340" y="139" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_3_di" bpmnElement="P1_Flow_3">
+        <di:waypoint x="310" y="190" />
+        <di:waypoint x="366" y="190" />
+        <di:waypoint x="366" y="256" />
+        <di:waypoint x="394" y="256" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="347" y="205" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_4_di" bpmnElement="P1_Flow_4">
+        <di:waypoint x="554" y="124" />
+        <di:waypoint x="606" y="124" />
+        <di:waypoint x="606" y="190" />
+        <di:waypoint x="634" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_5_di" bpmnElement="P1_Flow_5">
+        <di:waypoint x="782" y="190" />
+        <di:waypoint x="834" y="190" />
+        <di:waypoint x="862" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_6_di" bpmnElement="P1_Flow_6">
+        <di:waypoint x="551" y="256" />
+        <di:waypoint x="606" y="256" />
+        <di:waypoint x="606" y="408" />
+        <di:waypoint x="634" y="408" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_7_di" bpmnElement="P1_Flow_7">
+        <di:waypoint x="782" y="408" />
+        <di:waypoint x="834" y="408" />
+        <di:waypoint x="862" y="408" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

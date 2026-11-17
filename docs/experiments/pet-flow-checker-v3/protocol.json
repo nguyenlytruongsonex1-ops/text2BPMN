@@ -1,0 +1,73 @@
+{
+  "protocolVersion": "pet-flow-checker-v3",
+  "source": {
+    "url": "https://raw.githubusercontent.com/patriziobellan86/PETv1.1/master/PETv1.1-relations.json",
+    "version": "1.1",
+    "sha256": "bfb71816cc9782cb7197f106643935bd973a8376ca736db51e28f8e72b8d9708",
+    "license": "MIT"
+  },
+  "task": "Judge only one fixed PET human-annotated activity-flow ordering property on a synthetic sequential BPMN candidate containing exactly two tasks and one complete start-to-end path.",
+  "exclusions": [
+    "Not free-form requirement extraction",
+    "Not whole-process correctness",
+    "Not natural Text2BPMN error prevalence",
+    "Not an independent re-annotation of PET"
+  ],
+  "split": "Deterministic source-document hash; 9 validation and 36 held-out test documents. Both variants of one document remain in the same split.",
+  "counterexamples": "Exactly one positive and one deterministically reversed negative candidate per source document; the negative is verified by construction for the single selected flow-order property only.",
+  "models": {
+    "light": "meta-llama/llama-3.1-8b-instruct",
+    "strong": "qwen/qwen3-32b",
+    "provider": "DeepInfra"
+  },
+  "ablation": {
+    "design": "2x2 factorial per model",
+    "factors": [
+      "rubric prompt B0/B1",
+      "structured observable evidence E0/E1"
+    ],
+    "nativeReasoning": false,
+    "note": "E1 requests a bounded observable review and concise evidence, not hidden chain-of-thought.",
+    "conditions": [
+      {
+        "id": "B0-E0",
+        "rubric": false,
+        "structuredEvidence": false
+      },
+      {
+        "id": "B1-E0",
+        "rubric": true,
+        "structuredEvidence": false
+      },
+      {
+        "id": "B0-E1",
+        "rubric": false,
+        "structuredEvidence": true
+      },
+      {
+        "id": "B1-E1",
+        "rubric": true,
+        "structuredEvidence": true
+      }
+    ]
+  },
+  "evidenceValidation": "A pass/fail is downgraded to unknown unless the evidence cites at least one BPMN identifier and every cited Task/Flow/Start/End identifier exists in the submitted candidate.",
+  "decoding": {
+    "temperature": 0,
+    "maxTokens": 600,
+    "seed": null,
+    "seedReason": "Not supported by both selected endpoints."
+  },
+  "budget": {
+    "maxUsd": 1,
+    "unknownCostReserveUsd": 0.001,
+    "maxConcurrency": 8
+  },
+  "scopeLimitations": [
+    "Conclusions apply only to the selected activity-to-activity flow-order property on a sequential two-task BPMN candidate with one complete path.",
+    "This does not establish correctness of the source PET process, a generated BPMN process as a whole, arbitrary BPMN control flow, requirement extraction quality, or natural Text2BPMN error prevalence.",
+    "Positive and reversed candidates are constructed fixtures, not a representative sample of generated Text2BPMN outputs."
+  ],
+  "costReporting": "Total cost is the sum of costs reported in saved API usage metadata, not independently verified billed cost. Three of 720 calls lack effective model, provider, and cost metadata; unknown cost is not treated as zero.",
+  "uncertainty": "See uncertainty.json: offline paired document-cluster bootstrap over 36 held-out documents; both candidate variants remain together per draw. Intervals describe this finite benchmark sample and are not evidence of population-wide superiority or statistical significance."
+}

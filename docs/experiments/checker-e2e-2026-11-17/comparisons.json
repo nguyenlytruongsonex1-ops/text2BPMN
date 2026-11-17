@@ -1,0 +1,302 @@
+[
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P0",
+    "checkerStatus": "unknown",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "unknown",
+    "supported": false,
+    "agreement": null
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "application-xor",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P0",
+    "checkerStatus": "fail",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": false
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P0",
+    "checkerStatus": "fail",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": false
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "light",
+    "variant": "P2",
+    "checkerStatus": "unknown",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": false
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "light",
+    "variant": "P2",
+    "checkerStatus": "unknown",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": false
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P0",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P1",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R1",
+    "tier": "strong",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  },
+  {
+    "fixtureId": "order-sequence",
+    "requirementId": "R2",
+    "tier": "strong",
+    "variant": "P2",
+    "checkerStatus": "pass",
+    "oracleStatus": "pass",
+    "supported": true,
+    "agreement": true
+  }
+]

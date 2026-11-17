@@ -1,0 +1,18 @@
+process "Handle Application"
+lane "Admin"
+lane "Applicant"
+start s1 "Receive application" lane "Admin"
+xor g_route "Approve or Reject?" lane "Admin"
+task approve "Approve application" lane "Admin"
+service pay "Pay applicant" lane "Admin"
+task reject "Reject application" lane "Admin"
+user notify "Notify applicant" lane "Applicant"
+end e1 "Approved" lane "Admin"
+end e2 "Rejected" lane "Applicant"
+s1 -> g_route
+g_route -> approve "Approve"
+g_route -> reject "Reject"
+approve -> pay
+pay -> e1
+reject -> notify
+notify -> e2

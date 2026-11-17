@@ -1,0 +1,1388 @@
+[
+  {
+    "fixtureId": "application-sequence",
+    "text": "Process an application with these exact task names. Every instance performs Receive application, then Review application, then Pay applicant, then ends. No branching, loops or parallel work are allowed.",
+    "requirements": [
+      {
+        "id": "R1",
+        "sourceQuote": "Every instance performs Receive application, then Review application, then Pay applicant, then ends.",
+        "assertion": "Every complete execution contains Receive application before Review application before Pay applicant."
+      }
+    ],
+    "oracleSpecification": [
+      {
+        "requirementId": "R1",
+        "kind": "mandatory-sequence",
+        "labels": [
+          "Receive application",
+          "Review application",
+          "Pay applicant"
+        ]
+      }
+    ],
+    "generatedAt": "2026-11-17T14:03:33.174Z",
+    "generation": {
+      "ok": true,
+      "ir": "process \"Process Application\"\nlane \"Admin\"\nstart s1 \"Receive application\" lane \"Admin\"\ntask t1 \"Review application\" lane \"Admin\"\ntask t2 \"Pay applicant\" lane \"Admin\"\nend e1 \"End\" lane \"Admin\"\ns1 -> t1\nt1 -> t2\nt2 -> e1",
+      "engine": "python",
+      "diagrams": [
+        {
+          "name": "Process Application",
+          "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:collaboration id=\"P1_Collaboration_1\" name=\"Process Application\">\n    <bpmn:participant id=\"P1_Participant_1\" name=\"Process Application\" processRef=\"P1_Process_1\" />\n  </bpmn:collaboration>\n  <bpmn:process id=\"P1_Process_1\" name=\"Process Application\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"P1_LaneSet_1\">\n      <bpmn:lane id=\"P1_Lane_1\" name=\"Admin\">\n        <bpmn:flowNodeRef>P1_StartEvent_s1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_t1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_t2</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e1</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Receive application\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:task id=\"P1_Task_t1\" name=\"Review application\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_t2\" name=\"Pay applicant\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"End\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Task_t1\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Task_t1\" targetRef=\"P1_Task_t2\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_t2\" targetRef=\"P1_EndEvent_e1\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Collaboration_1\">\n      <bpmndi:BPMNShape id=\"P1_Participant_1_di\" bpmnElement=\"P1_Participant_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"56\" y=\"48\" width=\"761\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_1_di\" bpmnElement=\"P1_Lane_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"48\" width=\"731\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"144\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"101\" y=\"146\" width=\"122\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_t1_di\" bpmnElement=\"P1_Task_t1\">\n        <dc:Bounds x=\"260\" y=\"84\" width=\"157\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_t2_di\" bpmnElement=\"P1_Task_t2\">\n        <dc:Bounds x=\"497\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"725\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"729\" y=\"146\" width=\"28\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"180\" y=\"124\" />\n        <di:waypoint x=\"232\" y=\"124\" />\n        <di:waypoint x=\"260\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"417\" y=\"124\" />\n        <di:waypoint x=\"469\" y=\"124\" />\n        <di:waypoint x=\"497\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"645\" y=\"124\" />\n        <di:waypoint x=\"697\" y=\"124\" />\n        <di:waypoint x=\"725\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+          "warnings": []
+        }
+      ],
+      "combinedXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:collaboration id=\"P1_Collaboration_1\" name=\"Process Application\">\n    <bpmn:participant id=\"P1_Participant_1\" name=\"Process Application\" processRef=\"P1_Process_1\" />\n  </bpmn:collaboration>\n  <bpmn:process id=\"P1_Process_1\" name=\"Process Application\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"P1_LaneSet_1\">\n      <bpmn:lane id=\"P1_Lane_1\" name=\"Admin\">\n        <bpmn:flowNodeRef>P1_StartEvent_s1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_t1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_t2</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e1</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Receive application\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:task id=\"P1_Task_t1\" name=\"Review application\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_t2\" name=\"Pay applicant\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"End\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Task_t1\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Task_t1\" targetRef=\"P1_Task_t2\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_t2\" targetRef=\"P1_EndEvent_e1\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Collaboration_1\">\n      <bpmndi:BPMNShape id=\"P1_Participant_1_di\" bpmnElement=\"P1_Participant_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"56\" y=\"48\" width=\"761\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_1_di\" bpmnElement=\"P1_Lane_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"48\" width=\"731\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"144\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"101\" y=\"146\" width=\"122\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_t1_di\" bpmnElement=\"P1_Task_t1\">\n        <dc:Bounds x=\"260\" y=\"84\" width=\"157\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_t2_di\" bpmnElement=\"P1_Task_t2\">\n        <dc:Bounds x=\"497\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"725\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"729\" y=\"146\" width=\"28\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"180\" y=\"124\" />\n        <di:waypoint x=\"232\" y=\"124\" />\n        <di:waypoint x=\"260\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"417\" y=\"124\" />\n        <di:waypoint x=\"469\" y=\"124\" />\n        <di:waypoint x=\"497\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"645\" y=\"124\" />\n        <di:waypoint x=\"697\" y=\"124\" />\n        <di:waypoint x=\"725\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+      "error": null,
+      "attempts": [
+        0
+      ],
+      "semantics": {
+        "roles": {
+          "Admin": [
+            "Admin"
+          ]
+        },
+        "minutes": {
+          "Review application": 30,
+          "Pay applicant": 10
+        },
+        "rework": {
+          "Review application": 0.1
+        },
+        "branches": {},
+        "bottlenecks": [
+          "Review application"
+        ]
+      },
+      "features": {
+        "parsed": true,
+        "dropped": []
+      }
+    },
+    "irAudit": {
+      "steps": [
+        {
+          "id": "s1",
+          "kind": "start",
+          "label": "Receive application",
+          "lane": "Admin"
+        },
+        {
+          "id": "t1",
+          "kind": "task",
+          "label": "Review application",
+          "lane": "Admin"
+        },
+        {
+          "id": "t2",
+          "kind": "task",
+          "label": "Pay applicant",
+          "lane": "Admin"
+        },
+        {
+          "id": "e1",
+          "kind": "end",
+          "label": "End",
+          "lane": "Admin"
+        }
+      ],
+      "flows": [
+        {
+          "src": "s1",
+          "dst": "t1",
+          "line": 7
+        },
+        {
+          "src": "t1",
+          "dst": "t2",
+          "line": 8
+        },
+        {
+          "src": "t2",
+          "dst": "e1",
+          "line": 9
+        }
+      ]
+    },
+    "candidateSha256": "c88cd6f32f366a83208216a860ec788348a59b266ad6762ef1359ca23f0f9156",
+    "oracle": [
+      {
+        "requirementId": "R1",
+        "status": "unknown",
+        "reason": "Exact task-label mapping absent or ambiguous; no guessed match.",
+        "witness": null
+      }
+    ],
+    "reports": [
+      {
+        "status": "unknown",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P0",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "unknown",
+                "explanation": "OpenRouter returned unreadable JSON (HTTP 200).",
+                "evidence": []
+              }
+            ],
+            "status": "unknown",
+            "error": "OpenRouter returned unreadable JSON (HTTP 200).",
+            "inputTokens": 0,
+            "outputTokens": 0,
+            "costUsd": null,
+            "latencyMs": 45008,
+            "provider": null,
+            "effectiveModel": null,
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P1",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process starts with Receive application, then Review application, then Pay applicant, and ends. This matches the requirement that every instance performs these tasks in this order.",
+                "evidence": [
+                  "bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Task_t1\" />",
+                  "bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Task_t1\" targetRef=\"P1_Task_t2\" />",
+                  "bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_t2\" targetRef=\"P1_EndEvent_e1\" />"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 1967,
+            "outputTokens": 164,
+            "costUsd": 0.0000459,
+            "reasoningTokens": 0,
+            "latencyMs": 9288,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P2",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process starts with a Receive application event, followed by a Review application task, then a Pay applicant task, and finally ends. This order is consistent with the source requirement.",
+                "evidence": [
+                  "bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Task_t1\" />",
+                  "bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Task_t1\" targetRef=\"P1_Task_t2\" />",
+                  "bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_t2\" targetRef=\"P1_EndEvent_e1\" />"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2001,
+            "outputTokens": 167,
+            "costUsd": 0.0000467,
+            "reasoningTokens": 0,
+            "latencyMs": 7475,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P0",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The BPMN diagram defines a linear sequence of tasks: Receive application → Review application → Pay applicant → End. This matches the required order of execution.",
+                "evidence": [
+                  "P1_StartEvent_s1 (name: Receive application) → P1_Task_t1 (name: Review application) via P1_Flow_1",
+                  "P1_Task_t1 → P1_Task_t2 (name: Pay applicant) via P1_Flow_2",
+                  "P1_Task_t2 → P1_EndEvent_e1 via P1_Flow_3"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2006,
+            "outputTokens": 160,
+            "costUsd": 0.00020528,
+            "reasoningTokens": 0,
+            "latencyMs": 2888,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P1",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The BPMN diagram contains a single sequential path with the required activities in the correct order: Receive application → Review application → Pay applicant → End. No branching, parallel work, or loops are present.",
+                "evidence": [
+                  "P1_StartEvent_s1",
+                  "P1_Task_t1",
+                  "P1_Task_t2",
+                  "P1_EndEvent_e1",
+                  "P1_Flow_1",
+                  "P1_Flow_2",
+                  "P1_Flow_3"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2074,
+            "outputTokens": 112,
+            "costUsd": 0.00019728,
+            "reasoningTokens": 0,
+            "latencyMs": 4550,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P2",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The BPMN diagram contains a linear sequence of activities: Receive application → Review application → Pay applicant → End. No branching, loops, or parallel work is present.",
+                "evidence": [
+                  "P1_StartEvent_s1 (Receive application) → P1_Task_t1 (Review application) via P1_Flow_1",
+                  "P1_Task_t1 → P1_Task_t2 (Pay applicant) via P1_Flow_2",
+                  "P1_Task_t2 → P1_EndEvent_e1 (End) via P1_Flow_3"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2108,
+            "outputTokens": 160,
+            "costUsd": 0.00021344,
+            "reasoningTokens": 0,
+            "latencyMs": 3265,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "dfbaf8db5eb42cc5dad9c4aca100ea65c39adb97104eefb48632a7f75a1b16ee"
+      }
+    ],
+    "status": "completed"
+  },
+  {
+    "fixtureId": "application-xor",
+    "text": "Use these exact task names. Receive application, then choose exactly one of two routes with an exclusive gateway. The approved route performs Approve application, then Pay applicant, then ends. The rejected route performs Reject application, then Notify applicant, then ends. Never execute Pay applicant after Reject application. The route choice is provided externally; do not model data conditions, loops, timers or parallel work.",
+    "requirements": [
+      {
+        "id": "R1",
+        "sourceQuote": "Never execute Pay applicant after Reject application.",
+        "assertion": "No execution containing Reject application may subsequently contain Pay applicant."
+      },
+      {
+        "id": "R2",
+        "sourceQuote": "The rejected route performs Reject application, then Notify applicant, then ends.",
+        "assertion": "Every complete execution containing Reject application must subsequently contain Notify applicant."
+      }
+    ],
+    "oracleSpecification": [
+      {
+        "requirementId": "R1",
+        "kind": "forbidden-order",
+        "labels": [
+          "Reject application",
+          "Pay applicant"
+        ]
+      },
+      {
+        "requirementId": "R2",
+        "kind": "conditional-eventual",
+        "labels": [
+          "Reject application",
+          "Notify applicant"
+        ]
+      }
+    ],
+    "generatedAt": "2026-11-17T14:04:56.938Z",
+    "generation": {
+      "ok": true,
+      "ir": "process \"Handle Application\"\nlane \"Admin\"\nlane \"Applicant\"\nstart s1 \"Receive application\" lane \"Admin\"\nxor g_route \"Approve or Reject?\" lane \"Admin\"\ntask approve \"Approve application\" lane \"Admin\"\nservice pay \"Pay applicant\" lane \"Admin\"\ntask reject \"Reject application\" lane \"Admin\"\nuser notify \"Notify applicant\" lane \"Applicant\"\nend e1 \"Approved\" lane \"Admin\"\nend e2 \"Rejected\" lane \"Applicant\"\ns1 -> g_route\ng_route -> approve \"Approve\"\ng_route -> reject \"Reject\"\napprove -> pay\npay -> e1\nreject -> notify\nnotify -> e2",
+      "engine": "python",
+      "diagrams": [
+        {
+          "name": "Handle Application",
+          "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:collaboration id=\"P1_Collaboration_1\" name=\"Handle Application\">\n    <bpmn:participant id=\"P1_Participant_1\" name=\"Handle Application\" processRef=\"P1_Process_1\" />\n  </bpmn:collaboration>\n  <bpmn:process id=\"P1_Process_1\" name=\"Handle Application\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"P1_LaneSet_1\">\n      <bpmn:lane id=\"P1_Lane_1\" name=\"Admin\">\n        <bpmn:flowNodeRef>P1_StartEvent_s1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Gateway_g_route</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_approve</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_ServiceTask_pay</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_reject</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e1</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"P1_Lane_2\" name=\"Applicant\">\n        <bpmn:flowNodeRef>P1_UserTask_notify</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e2</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Receive application\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:exclusiveGateway id=\"P1_Gateway_g_route\" name=\"Approve or Reject?\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"P1_Task_approve\" name=\"Approve application\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:serviceTask id=\"P1_ServiceTask_pay\" name=\"Pay applicant\">\n      <bpmn:incoming>P1_Flow_4</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>\n    </bpmn:serviceTask>\n    <bpmn:task id=\"P1_Task_reject\" name=\"Reject application\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_6</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:userTask id=\"P1_UserTask_notify\" name=\"Notify applicant\">\n      <bpmn:incoming>P1_Flow_6</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_7</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"Approved\">\n      <bpmn:incoming>P1_Flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:endEvent id=\"P1_EndEvent_e2\" name=\"Rejected\">\n      <bpmn:incoming>P1_Flow_7</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Gateway_g_route\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Gateway_g_route\" targetRef=\"P1_Task_approve\" name=\"Approve\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Gateway_g_route\" targetRef=\"P1_Task_reject\" name=\"Reject\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_approve\" targetRef=\"P1_ServiceTask_pay\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_5\" sourceRef=\"P1_ServiceTask_pay\" targetRef=\"P1_EndEvent_e1\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_6\" sourceRef=\"P1_Task_reject\" targetRef=\"P1_UserTask_notify\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_7\" sourceRef=\"P1_UserTask_notify\" targetRef=\"P1_EndEvent_e2\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Collaboration_1\">\n      <bpmndi:BPMNShape id=\"P1_Participant_1_di\" bpmnElement=\"P1_Participant_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"56\" y=\"48\" width=\"898\" height=\"436\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_1_di\" bpmnElement=\"P1_Lane_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"48\" width=\"868\" height=\"284\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_2_di\" bpmnElement=\"P1_Lane_2\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"332\" width=\"868\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"144\" y=\"172\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"101\" y=\"212\" width=\"122\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Gateway_g_route_di\" bpmnElement=\"P1_Gateway_g_route\">\n        <dc:Bounds x=\"260\" y=\"165\" width=\"50\" height=\"50\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"228\" y=\"219\" width=\"115\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_approve_di\" bpmnElement=\"P1_Task_approve\">\n        <dc:Bounds x=\"390\" y=\"84\" width=\"164\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_ServiceTask_pay_di\" bpmnElement=\"P1_ServiceTask_pay\">\n        <dc:Bounds x=\"634\" y=\"150\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_reject_di\" bpmnElement=\"P1_Task_reject\">\n        <dc:Bounds x=\"394\" y=\"216\" width=\"157\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_UserTask_notify_di\" bpmnElement=\"P1_UserTask_notify\">\n        <dc:Bounds x=\"634\" y=\"368\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"862\" y=\"172\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"855\" y=\"212\" width=\"51\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e2_di\" bpmnElement=\"P1_EndEvent_e2\">\n        <dc:Bounds x=\"862\" y=\"390\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"855\" y=\"430\" width=\"51\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"180\" y=\"190\" />\n        <di:waypoint x=\"232\" y=\"190\" />\n        <di:waypoint x=\"260\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"310\" y=\"190\" />\n        <di:waypoint x=\"362\" y=\"190\" />\n        <di:waypoint x=\"362\" y=\"124\" />\n        <di:waypoint x=\"390\" y=\"124\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"340\" y=\"139\" width=\"45\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"310\" y=\"190\" />\n        <di:waypoint x=\"366\" y=\"190\" />\n        <di:waypoint x=\"366\" y=\"256\" />\n        <di:waypoint x=\"394\" y=\"256\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"347\" y=\"205\" width=\"38\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_4_di\" bpmnElement=\"P1_Flow_4\">\n        <di:waypoint x=\"554\" y=\"124\" />\n        <di:waypoint x=\"606\" y=\"124\" />\n        <di:waypoint x=\"606\" y=\"190\" />\n        <di:waypoint x=\"634\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_5_di\" bpmnElement=\"P1_Flow_5\">\n        <di:waypoint x=\"782\" y=\"190\" />\n        <di:waypoint x=\"834\" y=\"190\" />\n        <di:waypoint x=\"862\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_6_di\" bpmnElement=\"P1_Flow_6\">\n        <di:waypoint x=\"551\" y=\"256\" />\n        <di:waypoint x=\"606\" y=\"256\" />\n        <di:waypoint x=\"606\" y=\"408\" />\n        <di:waypoint x=\"634\" y=\"408\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_7_di\" bpmnElement=\"P1_Flow_7\">\n        <di:waypoint x=\"782\" y=\"408\" />\n        <di:waypoint x=\"834\" y=\"408\" />\n        <di:waypoint x=\"862\" y=\"408\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+          "warnings": []
+        }
+      ],
+      "combinedXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:collaboration id=\"P1_Collaboration_1\" name=\"Handle Application\">\n    <bpmn:participant id=\"P1_Participant_1\" name=\"Handle Application\" processRef=\"P1_Process_1\" />\n  </bpmn:collaboration>\n  <bpmn:process id=\"P1_Process_1\" name=\"Handle Application\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"P1_LaneSet_1\">\n      <bpmn:lane id=\"P1_Lane_1\" name=\"Admin\">\n        <bpmn:flowNodeRef>P1_StartEvent_s1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Gateway_g_route</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_approve</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_ServiceTask_pay</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_Task_reject</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e1</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"P1_Lane_2\" name=\"Applicant\">\n        <bpmn:flowNodeRef>P1_UserTask_notify</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>P1_EndEvent_e2</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Receive application\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:exclusiveGateway id=\"P1_Gateway_g_route\" name=\"Approve or Reject?\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"P1_Task_approve\" name=\"Approve application\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:serviceTask id=\"P1_ServiceTask_pay\" name=\"Pay applicant\">\n      <bpmn:incoming>P1_Flow_4</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>\n    </bpmn:serviceTask>\n    <bpmn:task id=\"P1_Task_reject\" name=\"Reject application\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_6</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:userTask id=\"P1_UserTask_notify\" name=\"Notify applicant\">\n      <bpmn:incoming>P1_Flow_6</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_7</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"Approved\">\n      <bpmn:incoming>P1_Flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:endEvent id=\"P1_EndEvent_e2\" name=\"Rejected\">\n      <bpmn:incoming>P1_Flow_7</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Gateway_g_route\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Gateway_g_route\" targetRef=\"P1_Task_approve\" name=\"Approve\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Gateway_g_route\" targetRef=\"P1_Task_reject\" name=\"Reject\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_approve\" targetRef=\"P1_ServiceTask_pay\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_5\" sourceRef=\"P1_ServiceTask_pay\" targetRef=\"P1_EndEvent_e1\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_6\" sourceRef=\"P1_Task_reject\" targetRef=\"P1_UserTask_notify\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_7\" sourceRef=\"P1_UserTask_notify\" targetRef=\"P1_EndEvent_e2\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Collaboration_1\">\n      <bpmndi:BPMNShape id=\"P1_Participant_1_di\" bpmnElement=\"P1_Participant_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"56\" y=\"48\" width=\"898\" height=\"436\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_1_di\" bpmnElement=\"P1_Lane_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"48\" width=\"868\" height=\"284\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Lane_2_di\" bpmnElement=\"P1_Lane_2\" isHorizontal=\"true\">\n        <dc:Bounds x=\"86\" y=\"332\" width=\"868\" height=\"152\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"144\" y=\"172\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"101\" y=\"212\" width=\"122\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Gateway_g_route_di\" bpmnElement=\"P1_Gateway_g_route\">\n        <dc:Bounds x=\"260\" y=\"165\" width=\"50\" height=\"50\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"228\" y=\"219\" width=\"115\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_approve_di\" bpmnElement=\"P1_Task_approve\">\n        <dc:Bounds x=\"390\" y=\"84\" width=\"164\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_ServiceTask_pay_di\" bpmnElement=\"P1_ServiceTask_pay\">\n        <dc:Bounds x=\"634\" y=\"150\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_reject_di\" bpmnElement=\"P1_Task_reject\">\n        <dc:Bounds x=\"394\" y=\"216\" width=\"157\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_UserTask_notify_di\" bpmnElement=\"P1_UserTask_notify\">\n        <dc:Bounds x=\"634\" y=\"368\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"862\" y=\"172\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"855\" y=\"212\" width=\"51\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e2_di\" bpmnElement=\"P1_EndEvent_e2\">\n        <dc:Bounds x=\"862\" y=\"390\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"855\" y=\"430\" width=\"51\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"180\" y=\"190\" />\n        <di:waypoint x=\"232\" y=\"190\" />\n        <di:waypoint x=\"260\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"310\" y=\"190\" />\n        <di:waypoint x=\"362\" y=\"190\" />\n        <di:waypoint x=\"362\" y=\"124\" />\n        <di:waypoint x=\"390\" y=\"124\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"340\" y=\"139\" width=\"45\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"310\" y=\"190\" />\n        <di:waypoint x=\"366\" y=\"190\" />\n        <di:waypoint x=\"366\" y=\"256\" />\n        <di:waypoint x=\"394\" y=\"256\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"347\" y=\"205\" width=\"38\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_4_di\" bpmnElement=\"P1_Flow_4\">\n        <di:waypoint x=\"554\" y=\"124\" />\n        <di:waypoint x=\"606\" y=\"124\" />\n        <di:waypoint x=\"606\" y=\"190\" />\n        <di:waypoint x=\"634\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_5_di\" bpmnElement=\"P1_Flow_5\">\n        <di:waypoint x=\"782\" y=\"190\" />\n        <di:waypoint x=\"834\" y=\"190\" />\n        <di:waypoint x=\"862\" y=\"190\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_6_di\" bpmnElement=\"P1_Flow_6\">\n        <di:waypoint x=\"551\" y=\"256\" />\n        <di:waypoint x=\"606\" y=\"256\" />\n        <di:waypoint x=\"606\" y=\"408\" />\n        <di:waypoint x=\"634\" y=\"408\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_7_di\" bpmnElement=\"P1_Flow_7\">\n        <di:waypoint x=\"782\" y=\"408\" />\n        <di:waypoint x=\"834\" y=\"408\" />\n        <di:waypoint x=\"862\" y=\"408\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+      "error": null,
+      "attempts": [
+        0
+      ],
+      "semantics": {
+        "customerRole": "Applicant",
+        "customers": [
+          "Applicant"
+        ],
+        "roles": {
+          "Admin": [
+            "Admin"
+          ]
+        },
+        "minutes": {
+          "Approve application": 10,
+          "Pay applicant": 15,
+          "Reject application": 5,
+          "Notify applicant": 5
+        },
+        "rework": {},
+        "branches": {
+          "Approve or Reject?": {
+            "Approve application": 0.5,
+            "Reject application": 0.5
+          }
+        },
+        "bottlenecks": [
+          "Pay applicant"
+        ]
+      },
+      "features": {
+        "parsed": true,
+        "dropped": [
+          "roles.Applicant",
+          "minutes.g_route"
+        ]
+      }
+    },
+    "irAudit": {
+      "steps": [
+        {
+          "id": "s1",
+          "kind": "start",
+          "label": "Receive application",
+          "lane": "Admin"
+        },
+        {
+          "id": "g_route",
+          "kind": "xor",
+          "label": "Approve or Reject?",
+          "lane": "Admin"
+        },
+        {
+          "id": "approve",
+          "kind": "task",
+          "label": "Approve application",
+          "lane": "Admin"
+        },
+        {
+          "id": "pay",
+          "kind": "service",
+          "label": "Pay applicant",
+          "lane": "Admin"
+        },
+        {
+          "id": "reject",
+          "kind": "task",
+          "label": "Reject application",
+          "lane": "Admin"
+        },
+        {
+          "id": "notify",
+          "kind": "user",
+          "label": "Notify applicant",
+          "lane": "Applicant"
+        },
+        {
+          "id": "e1",
+          "kind": "end",
+          "label": "Approved",
+          "lane": "Admin"
+        },
+        {
+          "id": "e2",
+          "kind": "end",
+          "label": "Rejected",
+          "lane": "Applicant"
+        }
+      ],
+      "flows": [
+        {
+          "src": "s1",
+          "dst": "g_route",
+          "line": 12
+        },
+        {
+          "src": "g_route",
+          "dst": "approve",
+          "line": 13
+        },
+        {
+          "src": "g_route",
+          "dst": "reject",
+          "line": 14
+        },
+        {
+          "src": "approve",
+          "dst": "pay",
+          "line": 15
+        },
+        {
+          "src": "pay",
+          "dst": "e1",
+          "line": 16
+        },
+        {
+          "src": "reject",
+          "dst": "notify",
+          "line": 17
+        },
+        {
+          "src": "notify",
+          "dst": "e2",
+          "line": 18
+        }
+      ]
+    },
+    "candidateSha256": "9e20426afcedf8f377e0451332dbc8d44e3a89341b5a0bb759649d15ae31fa0e",
+    "oracle": [
+      {
+        "requirementId": "R1",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_reject",
+          "P1_ServiceTask_pay"
+        ],
+        "completePaths": 2,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_route",
+              "P1_Task_approve",
+              "P1_ServiceTask_pay",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          },
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_route",
+              "P1_Task_reject",
+              "P1_UserTask_notify",
+              "P1_EndEvent_e2"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_3",
+              "P1_Flow_6",
+              "P1_Flow_7"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      },
+      {
+        "requirementId": "R2",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_reject",
+          "P1_UserTask_notify"
+        ],
+        "completePaths": 2,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_route",
+              "P1_Task_approve",
+              "P1_ServiceTask_pay",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          },
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_route",
+              "P1_Task_reject",
+              "P1_UserTask_notify",
+              "P1_EndEvent_e2"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_3",
+              "P1_Flow_6",
+              "P1_Flow_7"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      }
+    ],
+    "reports": [
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P0",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The sequence flow from the exclusive gateway to the Reject application task is not followed by the Pay applicant task. The sequence flow from the exclusive gateway to the Reject application task is followed by the Notify applicant task.",
+                "evidence": [
+                  "P1_Flow_3",
+                  "P1_Flow_6"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "Every complete execution containing Reject application must subsequently contain Notify applicant. The sequence flow from the Reject application task to the Notify applicant task is present.",
+                "evidence": [
+                  "P1_Flow_6"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3519,
+            "outputTokens": 178,
+            "costUsd": 0.0000775,
+            "reasoningTokens": 0,
+            "latencyMs": 8392,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P1",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The sequence flow P1_Flow_3 is only connected to the exclusive gateway P1_Gateway_g_route, and the service task P1_ServiceTask_pay is only connected to the task P1_Task_approve. Therefore, no execution containing Reject application may subsequently contain Pay applicant.",
+                "evidence": [
+                  "P1_Flow_3",
+                  "P1_ServiceTask_pay"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The sequence flow P1_Flow_6 is connected to the user task P1_UserTask_notify, which is only connected to the end event P1_EndEvent_e2. Therefore, every complete execution containing Reject application must subsequently contain Notify applicant.",
+                "evidence": [
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_EndEvent_e2"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3587,
+            "outputTokens": 183,
+            "costUsd": 0.00007906,
+            "reasoningTokens": 0,
+            "latencyMs": 9486,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P2",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The sequence flows P1_Flow_2 and P1_Flow_3 are outgoing from the exclusive gateway P1_Gateway_g_route. P1_Flow_2 is connected to P1_Task_approve, which has no outgoing sequence flows, and P1_Flow_3 is connected to P1_Task_reject, which has an outgoing sequence flow P1_Flow_6. P1_Flow_6 is connected to P1_UserTask_notify, which has an outgoing sequence flow P1_Flow_7. P1_Flow_7 is connected to P1_EndEvent_e2, which is the end event for the rejected path. Therefore, the path P1_Flow_3 -> P1_Task_reject -> P1_UserTask_notify -> P1_EndEvent_e2 is executed when the application is rejected, and the path P1_Flow_2 -> P1_Task_approve -> P1_ServiceTask_pay -> P1_EndEvent_e1 is executed when the application is approved. This ensures that Pay applicant is never executed after Reject application.",
+                "evidence": [
+                  "P1_Flow_2",
+                  "P1_Flow_3",
+                  "P1_Task_approve",
+                  "P1_ServiceTask_pay",
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_Flow_7",
+                  "P1_EndEvent_e2"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The sequence flows P1_Flow_6 and P1_Flow_7 are outgoing from the task P1_Task_reject and the user task P1_UserTask_notify, respectively. P1_Flow_6 is connected to P1_UserTask_notify, which has an outgoing sequence flow P1_Flow_7. P1_Flow_7 is connected to P1_EndEvent_e2, which is the end event for the rejected path. Therefore, the path P1_Flow_6 -> P1_UserTask_notify -> P1_Flow_7 -> P1_EndEvent_e2 is executed when the application is rejected, and the path P1_Flow_2 -> P1_Task_approve -> P1_ServiceTask_pay -> P1_EndEvent_e1 is executed when the application is approved. This ensures that every complete execution containing Reject application must subsequently contain Notify applicant.",
+                "evidence": [
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_Flow_7",
+                  "P1_EndEvent_e2"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3621,
+            "outputTokens": 523,
+            "costUsd": 0.00009334,
+            "reasoningTokens": 0,
+            "latencyMs": 21667,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P0",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The 'Reject application' task is in a separate branch from 'Pay applicant', and the two branches are mutually exclusive due to the exclusive gateway. There is no path from 'Reject application' to 'Pay applicant'.",
+                "evidence": [
+                  "P1_Task_reject",
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_Flow_7",
+                  "P1_EndEvent_e2"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The 'Reject application' task is followed by 'Notify applicant', which is then followed by the end event 'Rejected', satisfying the sequence requirement.",
+                "evidence": [
+                  "P1_Task_reject",
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_Flow_7",
+                  "P1_EndEvent_e2"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3749,
+            "outputTokens": 241,
+            "costUsd": 0.0003674,
+            "reasoningTokens": 0,
+            "latencyMs": 4811,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P1",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The BPMN diagram uses an exclusive gateway to route to either the approved or rejected path. The 'Pay applicant' activity is only in the approved path and is not reachable from the rejected path, ensuring it is never executed after 'Reject application'.",
+                "evidence": [
+                  "P1_Gateway_g_route",
+                  "P1_Task_reject",
+                  "P1_Task_approve",
+                  "P1_ServiceTask_pay"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The rejected path includes 'Reject application' followed by 'Notify applicant' and ends at the 'Rejected' end event, satisfying the requirement that every execution containing 'Reject application' must subsequently contain 'Notify applicant'.",
+                "evidence": [
+                  "P1_Task_reject",
+                  "P1_UserTask_notify",
+                  "P1_EndEvent_e2"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3817,
+            "outputTokens": 179,
+            "costUsd": 0.00035548,
+            "reasoningTokens": 0,
+            "latencyMs": 6605,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P2",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process uses an exclusive gateway to route to either the approved or rejected path. The 'Pay applicant' task is only on the approved path and is never reachable from the 'Reject application' task. There is no path that includes both 'Reject application' and 'Pay applicant'.",
+                "evidence": [
+                  "P1_Task_reject",
+                  "P1_UserTask_notify",
+                  "P1_EndEvent_e2",
+                  "P1_Task_approve",
+                  "P1_ServiceTask_pay",
+                  "P1_EndEvent_e1"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The rejected route includes 'Reject application' followed by 'Notify applicant' and ends at the 'Rejected' end event. All paths containing 'Reject application' must proceed to 'Notify applicant' and end, as required.",
+                "evidence": [
+                  "P1_Task_reject",
+                  "P1_Flow_6",
+                  "P1_UserTask_notify",
+                  "P1_Flow_7",
+                  "P1_EndEvent_e2"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 3851,
+            "outputTokens": 214,
+            "costUsd": 0.000368,
+            "reasoningTokens": 0,
+            "latencyMs": 4065,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "be0f6efc816bf924c24536ccc9b31d98b0430826a70afb5f5e097d6307f2e130"
+      }
+    ],
+    "status": "completed"
+  },
+  {
+    "fixtureId": "order-sequence",
+    "text": "Use these exact task names in one sequential process. Every order executes Register order, then Verify order, then Dispatch order, then ends. Dispatch order must never occur before Verify order. Do not introduce branches, loops, parallel activities, timers or data conditions.",
+    "requirements": [
+      {
+        "id": "R1",
+        "sourceQuote": "Every order executes Register order, then Verify order, then Dispatch order, then ends.",
+        "assertion": "Every complete execution contains Register order before Verify order before Dispatch order."
+      },
+      {
+        "id": "R2",
+        "sourceQuote": "Dispatch order must never occur before Verify order.",
+        "assertion": "No complete execution reaches Dispatch order without previously executing Verify order."
+      }
+    ],
+    "oracleSpecification": [
+      {
+        "requirementId": "R1",
+        "kind": "mandatory-sequence",
+        "labels": [
+          "Register order",
+          "Verify order",
+          "Dispatch order"
+        ]
+      },
+      {
+        "requirementId": "R2",
+        "kind": "requires-prior",
+        "labels": [
+          "Dispatch order",
+          "Verify order"
+        ]
+      }
+    ],
+    "generatedAt": "2026-11-17T14:06:08.895Z",
+    "generation": {
+      "ok": true,
+      "ir": "process \"Order Processing\"\nstart s1 \"Order received\"\nxor g_case \"Which case?\"\ntask register \"Register order\"\ntask verify \"Verify order\"\ntask dispatch \"Dispatch order\"\nend e1 \"Order Completed\"\ns1 -> g_case\ng_case -> register\nregister -> verify\nverify -> dispatch\ndispatch -> e1",
+      "engine": "python",
+      "diagrams": [
+        {
+          "name": "Order Processing",
+          "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:process id=\"P1_Process_1\" name=\"Order Processing\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Order received\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:exclusiveGateway id=\"P1_Gateway_g_case\" name=\"Which case?\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"P1_Task_register\" name=\"Register order\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_verify\" name=\"Verify order\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_dispatch\" name=\"Dispatch order\">\n      <bpmn:incoming>P1_Flow_4</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"Order Completed\">\n      <bpmn:incoming>P1_Flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Gateway_g_case\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Gateway_g_case\" targetRef=\"P1_Task_register\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_register\" targetRef=\"P1_Task_verify\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_verify\" targetRef=\"P1_Task_dispatch\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_5\" sourceRef=\"P1_Task_dispatch\" targetRef=\"P1_EndEvent_e1\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Process_1\">\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"84\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"57\" y=\"146\" width=\"90\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Gateway_g_case_di\" bpmnElement=\"P1_Gateway_g_case\">\n        <dc:Bounds x=\"200\" y=\"99\" width=\"50\" height=\"50\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"190\" y=\"153\" width=\"70\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_register_di\" bpmnElement=\"P1_Task_register\">\n        <dc:Bounds x=\"330\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_verify_di\" bpmnElement=\"P1_Task_verify\">\n        <dc:Bounds x=\"558\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_dispatch_di\" bpmnElement=\"P1_Task_dispatch\">\n        <dc:Bounds x=\"786\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"1014\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"984\" y=\"146\" width=\"96\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"120\" y=\"124\" />\n        <di:waypoint x=\"172\" y=\"124\" />\n        <di:waypoint x=\"200\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"250\" y=\"124\" />\n        <di:waypoint x=\"302\" y=\"124\" />\n        <di:waypoint x=\"330\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"478\" y=\"124\" />\n        <di:waypoint x=\"530\" y=\"124\" />\n        <di:waypoint x=\"558\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_4_di\" bpmnElement=\"P1_Flow_4\">\n        <di:waypoint x=\"706\" y=\"124\" />\n        <di:waypoint x=\"758\" y=\"124\" />\n        <di:waypoint x=\"786\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_5_di\" bpmnElement=\"P1_Flow_5\">\n        <di:waypoint x=\"934\" y=\"124\" />\n        <di:waypoint x=\"986\" y=\"124\" />\n        <di:waypoint x=\"1014\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+          "warnings": []
+        }
+      ],
+      "combinedXml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:process id=\"P1_Process_1\" name=\"Order Processing\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Order received\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:exclusiveGateway id=\"P1_Gateway_g_case\" name=\"Which case?\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"P1_Task_register\" name=\"Register order\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_verify\" name=\"Verify order\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_dispatch\" name=\"Dispatch order\">\n      <bpmn:incoming>P1_Flow_4</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"Order Completed\">\n      <bpmn:incoming>P1_Flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Gateway_g_case\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Gateway_g_case\" targetRef=\"P1_Task_register\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_register\" targetRef=\"P1_Task_verify\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_verify\" targetRef=\"P1_Task_dispatch\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_5\" sourceRef=\"P1_Task_dispatch\" targetRef=\"P1_EndEvent_e1\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Process_1\">\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"84\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"57\" y=\"146\" width=\"90\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Gateway_g_case_di\" bpmnElement=\"P1_Gateway_g_case\">\n        <dc:Bounds x=\"200\" y=\"99\" width=\"50\" height=\"50\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"190\" y=\"153\" width=\"70\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_register_di\" bpmnElement=\"P1_Task_register\">\n        <dc:Bounds x=\"330\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_verify_di\" bpmnElement=\"P1_Task_verify\">\n        <dc:Bounds x=\"558\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_dispatch_di\" bpmnElement=\"P1_Task_dispatch\">\n        <dc:Bounds x=\"786\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"1014\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"984\" y=\"146\" width=\"96\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"120\" y=\"124\" />\n        <di:waypoint x=\"172\" y=\"124\" />\n        <di:waypoint x=\"200\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"250\" y=\"124\" />\n        <di:waypoint x=\"302\" y=\"124\" />\n        <di:waypoint x=\"330\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"478\" y=\"124\" />\n        <di:waypoint x=\"530\" y=\"124\" />\n        <di:waypoint x=\"558\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_4_di\" bpmnElement=\"P1_Flow_4\">\n        <di:waypoint x=\"706\" y=\"124\" />\n        <di:waypoint x=\"758\" y=\"124\" />\n        <di:waypoint x=\"786\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_5_di\" bpmnElement=\"P1_Flow_5\">\n        <di:waypoint x=\"934\" y=\"124\" />\n        <di:waypoint x=\"986\" y=\"124\" />\n        <di:waypoint x=\"1014\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+      "error": null,
+      "attempts": [
+        1,
+        0
+      ],
+      "semantics": {
+        "roles": {},
+        "minutes": {
+          "Register order": 15,
+          "Verify order": 10,
+          "Dispatch order": 5
+        },
+        "rework": {},
+        "branches": {
+          "Which case?": {
+            "Register order": 1
+          }
+        },
+        "bottlenecks": []
+      },
+      "features": {
+        "parsed": true,
+        "dropped": []
+      }
+    },
+    "irAudit": {
+      "steps": [
+        {
+          "id": "s1",
+          "kind": "start",
+          "label": "Order received",
+          "lane": null
+        },
+        {
+          "id": "g_case",
+          "kind": "xor",
+          "label": "Which case?",
+          "lane": null
+        },
+        {
+          "id": "register",
+          "kind": "task",
+          "label": "Register order",
+          "lane": null
+        },
+        {
+          "id": "verify",
+          "kind": "task",
+          "label": "Verify order",
+          "lane": null
+        },
+        {
+          "id": "dispatch",
+          "kind": "task",
+          "label": "Dispatch order",
+          "lane": null
+        },
+        {
+          "id": "e1",
+          "kind": "end",
+          "label": "Order Completed",
+          "lane": null
+        }
+      ],
+      "flows": [
+        {
+          "src": "s1",
+          "dst": "g_case",
+          "line": 8
+        },
+        {
+          "src": "g_case",
+          "dst": "register",
+          "line": 9
+        },
+        {
+          "src": "register",
+          "dst": "verify",
+          "line": 10
+        },
+        {
+          "src": "verify",
+          "dst": "dispatch",
+          "line": 11
+        },
+        {
+          "src": "dispatch",
+          "dst": "e1",
+          "line": 12
+        }
+      ]
+    },
+    "candidateSha256": "d23ee0c171251719bf303d0bd4f87eb5cf283b2101341bba1055014ad3fd4481",
+    "oracle": [
+      {
+        "requirementId": "R1",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_register",
+          "P1_Task_verify",
+          "P1_Task_dispatch"
+        ],
+        "completePaths": 1,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_case",
+              "P1_Task_register",
+              "P1_Task_verify",
+              "P1_Task_dispatch",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_3",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      },
+      {
+        "requirementId": "R2",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_dispatch",
+          "P1_Task_verify"
+        ],
+        "completePaths": 1,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_case",
+              "P1_Task_register",
+              "P1_Task_verify",
+              "P1_Task_dispatch",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_3",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      }
+    ],
+    "reports": [
+      {
+        "status": "fail",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P0",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "fail",
+                "explanation": "The process does not contain Register order before Verify order. The sequence flow P1_Flow_3 connects Verify order to Dispatch order, but it should connect to Register order.",
+                "evidence": [
+                  "bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_register\" targetRef=\"P1_Task_verify\"",
+                  "bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_register\" targetRef=\"P1_Task_verify\""
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "fail",
+                "explanation": "The process allows Dispatch order to occur before Verify order. The sequence flow P1_Flow_4 connects Verify order to Dispatch order, but it should not be possible for Dispatch order to occur before Verify order.",
+                "evidence": [
+                  "bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_verify\" targetRef=\"P1_Task_dispatch\"",
+                  "bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_verify\" targetRef=\"P1_Task_dispatch\""
+                ]
+              }
+            ],
+            "status": "fail",
+            "error": null,
+            "inputTokens": 2153,
+            "outputTokens": 293,
+            "costUsd": 0.00005478,
+            "reasoningTokens": 0,
+            "latencyMs": 11595,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P1",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process starts with a start event, followed by an exclusive gateway, then a sequence of tasks: Register order, Verify order, and Dispatch order, and ends with a end event. The sequence of tasks is: P1_Task_register, P1_Task_verify, P1_Task_dispatch, and P1_EndEvent_e1. The sequence of tasks is in the correct order: Register order before Verify order before Dispatch order.",
+                "evidence": [
+                  "P1_Task_register",
+                  "P1_Task_verify",
+                  "P1_Task_dispatch",
+                  "P1_EndEvent_e1"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The process starts with a start event, followed by an exclusive gateway, then a sequence of tasks: Register order, Verify order, and Dispatch order, and ends with a end event. The sequence of tasks is: P1_Task_register, P1_Task_verify, P1_Task_dispatch, and P1_EndEvent_e1. The sequence of tasks is in the correct order: Verify order before Dispatch order.",
+                "evidence": [
+                  "P1_Task_register",
+                  "P1_Task_verify",
+                  "P1_Task_dispatch",
+                  "P1_EndEvent_e1"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2221,
+            "outputTokens": 254,
+            "costUsd": 0.00005458,
+            "reasoningTokens": 0,
+            "latencyMs": 10516,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      },
+      {
+        "status": "unknown",
+        "runs": [
+          {
+            "tier": "light",
+            "variant": "P2",
+            "model": "meta-llama/llama-3.1-8b-instruct",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "unknown",
+                "explanation": "Missing, duplicated or invalid model assessment; no conclusion.",
+                "evidence": []
+              },
+              {
+                "requirementId": "R2",
+                "status": "unknown",
+                "explanation": "Missing, duplicated or invalid model assessment; no conclusion.",
+                "evidence": []
+              }
+            ],
+            "status": "unknown",
+            "error": "Invalid or missing assessments: R1, R2",
+            "inputTokens": 2255,
+            "outputTokens": 587,
+            "costUsd": 0.00006858,
+            "reasoningTokens": 0,
+            "latencyMs": 22856,
+            "provider": "DeepInfra",
+            "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single light checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P0",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process defines a sequence where 'Register order' is followed by 'Verify order', which is followed by 'Dispatch order', and ends at the end event.",
+                "evidence": [
+                  "P1_Task_register -> P1_Task_verify via P1_Flow_3",
+                  "P1_Task_verify -> P1_Task_dispatch via P1_Flow_4",
+                  "P1_Task_dispatch -> P1_EndEvent_e1 via P1_Flow_5"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The 'Dispatch order' task is only reachable after the 'Verify order' task, ensuring it never occurs before verification.",
+                "evidence": [
+                  "P1_Task_verify -> P1_Task_dispatch via P1_Flow_4",
+                  "No direct flow from any element to P1_Task_dispatch without going through P1_Task_verify"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2286,
+            "outputTokens": 237,
+            "costUsd": 0.00024924,
+            "reasoningTokens": 0,
+            "latencyMs": 4912,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P0"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P1",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process executes Register order, Verify order, and Dispatch order in sequence as required.",
+                "evidence": [
+                  "P1_Task_register",
+                  "P1_Task_verify",
+                  "P1_Task_dispatch"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "Verify order occurs before Dispatch order in all paths.",
+                "evidence": [
+                  "P1_Task_verify",
+                  "P1_Task_dispatch"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2354,
+            "outputTokens": 94,
+            "costUsd": 0.00021464,
+            "reasoningTokens": 0,
+            "latencyMs": 2501,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P1"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      },
+      {
+        "status": "pass",
+        "runs": [
+          {
+            "tier": "strong",
+            "variant": "P2",
+            "model": "qwen/qwen3-32b",
+            "assessments": [
+              {
+                "requirementId": "R1",
+                "status": "pass",
+                "explanation": "The process defines a sequence where 'Register order' is followed by 'Verify order', which is followed by 'Dispatch order', and ends. This matches the requirement that every order executes in this exact sequence.",
+                "evidence": [
+                  "P1_Task_register (Register order) is followed by P1_Task_verify (Verify order) via P1_Flow_3",
+                  "P1_Task_verify (Verify order) is followed by P1_Task_dispatch (Dispatch order) via P1_Flow_4",
+                  "P1_Task_dispatch (Dispatch order) is followed by P1_EndEvent_e1 (Order Completed) via P1_Flow_5"
+                ]
+              },
+              {
+                "requirementId": "R2",
+                "status": "pass",
+                "explanation": "The process ensures that 'Verify order' is executed before 'Dispatch order' in all possible paths, as there are no alternative paths or conditions that could allow 'Dispatch order' to occur before 'Verify order'.",
+                "evidence": [
+                  "P1_Task_register (Register order) is followed by P1_Task_verify (Verify order) via P1_Flow_3",
+                  "P1_Task_verify (Verify order) is followed by P1_Task_dispatch (Dispatch order) via P1_Flow_4",
+                  "No alternative paths or conditions exist that bypass P1_Task_verify"
+                ]
+              }
+            ],
+            "status": "pass",
+            "error": null,
+            "inputTokens": 2388,
+            "outputTokens": 328,
+            "costUsd": 0.00028288,
+            "reasoningTokens": 0,
+            "latencyMs": 8516,
+            "provider": "DeepInfra",
+            "effectiveModel": "qwen/qwen3-32b",
+            "protocolVersion": "source-linked-checker-v1",
+            "promptVersion": "source-linked-checker-v1:P2"
+          }
+        ],
+        "escalated": false,
+        "routingReason": "Single strong checker requested.",
+        "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+        "candidateFingerprint": "016142ab0843209d42411b7183dfb227f88e787617cebb3ebf3f79a1b5530c54"
+      }
+    ],
+    "status": "completed"
+  }
+]

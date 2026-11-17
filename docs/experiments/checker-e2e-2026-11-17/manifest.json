@@ -1,0 +1,98 @@
+{
+  "startedAt": "2026-11-17T14:03:33.117Z",
+  "config": {
+    "generator": "qwen/qwen3.5-9b",
+    "light": "meta-llama/llama-3.1-8b-instruct",
+    "strong": "qwen/qwen3-32b",
+    "provider": "DeepInfra",
+    "maxCalls": 40,
+    "budgetUsd": 1,
+    "fixtureVersion": "controlled-fixtures-v1"
+  },
+  "fixtureSha256": "1b43e3a0fb85a4640f6d0268bb13058599d8e58676c853878ecc66522e3e1350",
+  "scope": "Three synthetic controlled English descriptions, not PET and not a real-business benchmark. Requirement specifications are fixed before generation; they are not checker-derived correctness labels.",
+  "assumptions": "Oracle reads actual emitted BPMN, with exact task-label mapping, one acyclic sequential/XOR process, unconstrained external XOR choices, no data guards/concurrency/events. Unknown otherwise. No new human annotation. Not a PET or real-business benchmark.",
+  "status": "completed",
+  "finishedAt": "2026-11-17T14:07:22.744Z",
+  "oracleReplay": {
+    "replayedAt": "2026-11-17T14:08:11.773Z",
+    "disclosure": "The oracle implementation was corrected after the original paid process started: shared-end/alternative XOR merges and the translator's one-participant/no-message collaboration wrapper had been classified too conservatively. Replay permits only a single participant referencing the sole process, with no message flows; multiple pools/processes/message interaction remain unsupported. The original run did not freeze execution-source hashes at startup. These hashes are captured after the run for offline replay, not evidence of the source originally loaded. Only oracle outcomes and derived comparison/summary artifacts are recomputed; checker outputs, candidates, source requirements and billing are unchanged.",
+    "auditFile": "oracle-replay-audit.json"
+  },
+  "sourceFreezeStatus": "not frozen at original startup; final-source hashes only",
+  "sourceSnapshotsAtFinal": {
+    "capturedAt": "2026-11-17T14:08:11.776Z",
+    "files": {
+      "scripts/checker-e2e.mjs": {
+        "sha256": "076283f78307b60bc43e6d2ceed5664dd6b1cf34489fb6757af5534e184740f8",
+        "bytes": 24869,
+        "mtime": "2026-11-17T14:07:31.108Z"
+      },
+      "docs/checker-e2e-fixtures.json": {
+        "sha256": "1b43e3a0fb85a4640f6d0268bb13058599d8e58676c853878ecc66522e3e1350",
+        "bytes": 3102,
+        "mtime": "2026-11-17T14:03:00.011Z"
+      },
+      "src/lib/bpmn/build.server.ts": {
+        "sha256": "5a3adb81490778fac3ace07c52f1d44ada95923992fd58cbd93c56b651028777",
+        "bytes": 8619,
+        "mtime": "2026-11-17T13:51:56.708Z"
+      },
+      "src/lib/bpmn/checker.server.ts": {
+        "sha256": "9ae139d3400b00e8c2fc75b0d9e40445746e0972d57108c3940c0033ac1ac732",
+        "bytes": 14526,
+        "mtime": "2026-11-17T14:00:19.928Z"
+      },
+      "src/lib/bpmn/checker.ts": {
+        "sha256": "9e0e4cd69551cc08797ef2dff31b5b8216d2f4d48aee853cbf228e88a5192de8",
+        "bytes": 9387,
+        "mtime": "2026-11-17T13:58:37.112Z"
+      },
+      "src/lib/bpmn/checker-types.ts": {
+        "sha256": "8b38cf884bd75a6de6182af4bf81cc51601bce62edec6e8841302170fd248078",
+        "bytes": 1557,
+        "mtime": "2026-11-17T13:58:37.111Z"
+      },
+      "src/lib/bpmn/ircheck.ts": {
+        "sha256": "1ba4cc886ef6cc12b791c7f87c40fd776138d2b4bb7dbd291119e506c183029d",
+        "bytes": 7845,
+        "mtime": "2026-11-17T13:51:56.709Z"
+      },
+      "src/lib/bpmn/engine.server.ts": {
+        "sha256": "142d995453e2413307d90424e9adf7cbe181e875a31c2d9d0988158492dde3f1",
+        "bytes": 1790,
+        "mtime": "2026-11-17T13:51:56.708Z"
+      },
+      "src/lib/bpmn/translate.ts": {
+        "sha256": "11b3a34f6999e775ad95a53f87a7fe273451de422c5c390b2a1a1e7e00704dd2",
+        "bytes": 36596,
+        "mtime": "2026-11-17T13:51:56.710Z"
+      },
+      "src/lib/bpmn/ir_to_bpmn.py": {
+        "sha256": "21eaa0c59ea33213eb05d37e1c64ae0500d92693e9b2b2e87e1ee1c6599d5f12",
+        "bytes": 35392,
+        "mtime": "2026-11-17T13:51:56.708Z"
+      },
+      "src/lib/bpmn/features.server.ts": {
+        "sha256": "56f61c3de0869c3e8bfb1a9a0a60399cf43346945b42da0758957c562170e3d3",
+        "bytes": 1201,
+        "mtime": "2026-11-17T13:51:56.708Z"
+      },
+      "src/lib/bpmn/features.ts": {
+        "sha256": "21b99090ba8ad6bda93a7cb321ba18296ed89221e142799e8240aa9f15157c68",
+        "bytes": 8110,
+        "mtime": "2026-11-17T13:51:56.708Z"
+      },
+      "src/lib/bpmn/prompts.ts": {
+        "sha256": "aa38a070a9f483ab06c5de963ee00e1f25edba9183df0f002c1ef3af4ef6790c",
+        "bytes": 10454,
+        "mtime": "2026-11-17T13:51:56.709Z"
+      },
+      "package-lock.json": {
+        "sha256": "4824dccd137b69f77bea183dd1d03db2f1c228e5d937dcb1113866beadf809c7",
+        "bytes": 270332,
+        "mtime": "2026-11-17T14:04:08.559Z"
+      }
+    }
+  }
+}

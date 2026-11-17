@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://text2bpmn.app/bpmn" exporter="text2BPMN" exporterVersion="1.0">
+  <bpmn:process id="P1_Process_1" name="Order Processing" isExecutable="false">
+    <bpmn:startEvent id="P1_StartEvent_s1" name="Order received">
+      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="P1_Gateway_g_case" name="Which case?">
+      <bpmn:incoming>P1_Flow_1</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="P1_Task_register" name="Register order">
+      <bpmn:incoming>P1_Flow_2</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="P1_Task_verify" name="Verify order">
+      <bpmn:incoming>P1_Flow_4</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="P1_Task_dispatch" name="Dispatch order">
+      <bpmn:incoming>P1_Flow_3</bpmn:incoming>
+      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="P1_EndEvent_e1" name="Order Completed">
+      <bpmn:incoming>P1_Flow_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="P1_Flow_1" sourceRef="P1_StartEvent_s1" targetRef="P1_Gateway_g_case" />
+    <bpmn:sequenceFlow id="P1_Flow_2" sourceRef="P1_Gateway_g_case" targetRef="P1_Task_register" />
+    <bpmn:sequenceFlow id="P1_Flow_3" sourceRef="P1_Task_register" targetRef="P1_Task_dispatch" />
+    <bpmn:sequenceFlow id="P1_Flow_4" sourceRef="P1_Task_dispatch" targetRef="P1_Task_verify" />
+    <bpmn:sequenceFlow id="P1_Flow_5" sourceRef="P1_Task_verify" targetRef="P1_EndEvent_e1" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="P1_BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="P1_BPMNPlane_1" bpmnElement="P1_Process_1">
+      <bpmndi:BPMNShape id="P1_StartEvent_s1_di" bpmnElement="P1_StartEvent_s1">
+        <dc:Bounds x="84" y="106" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="57" y="146" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Gateway_g_case_di" bpmnElement="P1_Gateway_g_case">
+        <dc:Bounds x="200" y="99" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="190" y="153" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Task_register_di" bpmnElement="P1_Task_register">
+        <dc:Bounds x="330" y="84" width="148" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Task_verify_di" bpmnElement="P1_Task_verify">
+        <dc:Bounds x="558" y="84" width="148" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_Task_dispatch_di" bpmnElement="P1_Task_dispatch">
+        <dc:Bounds x="786" y="84" width="148" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="P1_EndEvent_e1_di" bpmnElement="P1_EndEvent_e1">
+        <dc:Bounds x="1014" y="106" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="984" y="146" width="96" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="P1_Flow_1_di" bpmnElement="P1_Flow_1">
+        <di:waypoint x="102" y="124" />
+        <di:waypoint x="225" y="124" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_2_di" bpmnElement="P1_Flow_2">
+        <di:waypoint x="225" y="124" />
+        <di:waypoint x="404" y="124" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_3_di" bpmnElement="P1_Flow_3">
+        <di:waypoint x="404" y="124" />
+        <di:waypoint x="860" y="124" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_4_di" bpmnElement="P1_Flow_4">
+        <di:waypoint x="860" y="124" />
+        <di:waypoint x="632" y="124" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="P1_Flow_5_di" bpmnElement="P1_Flow_5">
+        <di:waypoint x="632" y="124" />
+        <di:waypoint x="1032" y="124" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

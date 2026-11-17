@@ -3,6 +3,7 @@ import { FileDown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DiagramCanvas, type DiagramHandle } from "@/components/diagram-canvas";
 import { ScenarioPanel } from "@/components/scenario-panel";
+import { CheckerPanel } from "@/components/checker-panel";
 import type { Semantics } from "@/lib/bpmn/sim";
 import { buildFromText, translateOnly } from "@/lib/bpmn/functions";
 import { copy } from "@/lib/bpmn/copy";
@@ -60,6 +61,14 @@ export function Studio() {
 
   useEffect(() => {
     let nextLang: Lang = "vi";
+    async function restore(savedIr: string, savedLang: Lang) {
+      try {
+        const result = await translateOnly({ data: { ir: savedIr, lang: savedLang } });
+        if (result.ok) apply(result.diagrams, result.combinedXml, result.engine);
+      } catch {
+        /* the saved IR can be translated again by hand */
+      }
+    }
     try {
       const stored = localStorage.getItem(LANG_KEY);
       if (stored === "en" || stored === "vi") nextLang = stored;
@@ -94,15 +103,6 @@ export function Studio() {
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", copy[lang].meta);
   }, [lang]);
-
-  async function restore(savedIr: string, savedLang: Lang) {
-    try {
-      const result = await translateOnly({ data: { ir: savedIr, lang: savedLang } });
-      if (result.ok) apply(result.diagrams, result.combinedXml, result.engine);
-    } catch {
-      /* the saved IR can be translated again by hand */
-    }
-  }
 
   function apply(next: DiagramFile[], combinedXml: string, nextEngine: EngineName) {
     setDiagrams(next);
@@ -179,7 +179,11 @@ export function Studio() {
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium text-muted">{t.eyebrow}</p>
             <h1 className="text-3xl font-semibold tracking-tight">text2BPMN</h1>
-            <a className="w-fit text-sm font-medium underline" href="/text2BPMN-source.zip" download="text2BPMN-source.zip">
+            <a
+              className="w-fit text-sm font-medium underline"
+              href="/text2BPMN-source.zip"
+              download="text2BPMN-source.zip"
+            >
               Tải mã nguồn
             </a>
             <p className="max-w-2xl text-sm leading-relaxed text-muted">{t.lead}</p>
@@ -215,7 +219,12 @@ export function Studio() {
           </div>
           <div className="flex flex-wrap gap-2">
             {samples.map((sample) => (
-              <Button key={sample.id} variant="ghost" onClick={() => setText(sample.text)} disabled={busy !== null}>
+              <Button
+                key={sample.id}
+                variant="ghost"
+                onClick={() => setText(sample.text)}
+                disabled={busy !== null}
+              >
                 {sample.title}
               </Button>
             ))}
@@ -261,7 +270,11 @@ export function Studio() {
                 placeholder={IR_HINT[lang]}
                 className="min-h-40 w-full resize-y rounded-sm border border-line bg-paper px-3 py-3 font-mono text-sm leading-relaxed text-ink outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
               />
-              <Button variant="secondary" onClick={() => void onTranslate()} disabled={busy !== null || !ir.trim()}>
+              <Button
+                variant="secondary"
+                onClick={() => void onTranslate()}
+                disabled={busy !== null || !ir.trim()}
+              >
                 <RefreshCw className="size-4" aria-hidden="true" />
                 {busy === "translate" ? t.translating : t.translate}
               </Button>
@@ -285,7 +298,11 @@ export function Studio() {
               <p className="text-sm text-muted">{t.diagramHint}</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button variant="secondary" onClick={() => canvasRef.current?.fit()} disabled={!current}>
+              <Button
+                variant="secondary"
+                onClick={() => canvasRef.current?.fit()}
+                disabled={!current}
+              >
                 {t.fit}
               </Button>
               <Button onClick={() => void onDownload()} disabled={!current}>
@@ -328,7 +345,12 @@ export function Studio() {
           ) : null}
 
           {current ? (
-            <DiagramCanvas key={`${token}:${active}`} ref={canvasRef} xml={current.xml} failLabel={t.canvasFailed} />
+            <DiagramCanvas
+              key={`${token}:${active}`}
+              ref={canvasRef}
+              xml={current.xml}
+              failLabel={t.canvasFailed}
+            />
           ) : (
             <div className="diagram-frame flex items-center justify-center rounded-sm border border-dashed border-line bg-paper px-6 text-center">
               <p className="max-w-sm text-sm text-muted">{t.empty}</p>
@@ -355,6 +377,15 @@ export function Studio() {
             ) : null}
           </div>
         </section>
+
+        {current ? (
+          <CheckerPanel
+            lang={lang}
+            text={text}
+            diagramKey={`${token}:${active}:${current.name}`}
+            getXml={async () => (await canvasRef.current?.getXmlStrict()) ?? null}
+          />
+        ) : null}
 
         {current ? (
           <ScenarioPanel

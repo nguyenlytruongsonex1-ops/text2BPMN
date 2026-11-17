@@ -1,0 +1,652 @@
+{
+  "source": "Use these exact task names in one sequential process. Every order executes Register order, then Verify order, then Dispatch order, then ends. Dispatch order must never occur before Verify order. Do not introduce branches, loops, parallel activities, timers or data conditions.",
+  "requirements": [
+    {
+      "id": "R1",
+      "sourceQuote": "Every order executes Register order, then Verify order, then Dispatch order, then ends.",
+      "assertion": "Every complete execution contains Register order before Verify order before Dispatch order."
+    },
+    {
+      "id": "R2",
+      "sourceQuote": "Dispatch order must never occur before Verify order.",
+      "assertion": "No complete execution reaches Dispatch order without previously executing Verify order."
+    }
+  ],
+  "mutation": {
+    "kind": "swap-adjacent-activities-by-flow-rewiring",
+    "activityIds": [
+      "P1_Task_verify",
+      "P1_Task_dispatch"
+    ],
+    "namesPreserved": true,
+    "shapeBoundsPreserved": true,
+    "edgeWaypointsReconnected": true,
+    "oldEdges": [
+      {
+        "id": "P1_Flow_1",
+        "source": "P1_StartEvent_s1",
+        "target": "P1_Gateway_g_case"
+      },
+      {
+        "id": "P1_Flow_2",
+        "source": "P1_Gateway_g_case",
+        "target": "P1_Task_register"
+      },
+      {
+        "id": "P1_Flow_3",
+        "source": "P1_Task_register",
+        "target": "P1_Task_verify"
+      },
+      {
+        "id": "P1_Flow_4",
+        "source": "P1_Task_verify",
+        "target": "P1_Task_dispatch"
+      },
+      {
+        "id": "P1_Flow_5",
+        "source": "P1_Task_dispatch",
+        "target": "P1_EndEvent_e1"
+      }
+    ],
+    "newEdges": [
+      {
+        "id": "P1_Flow_1",
+        "source": "P1_StartEvent_s1",
+        "target": "P1_Gateway_g_case"
+      },
+      {
+        "id": "P1_Flow_2",
+        "source": "P1_Gateway_g_case",
+        "target": "P1_Task_register"
+      },
+      {
+        "id": "P1_Flow_3",
+        "source": "P1_Task_register",
+        "target": "P1_Task_dispatch"
+      },
+      {
+        "id": "P1_Flow_4",
+        "source": "P1_Task_dispatch",
+        "target": "P1_Task_verify"
+      },
+      {
+        "id": "P1_Flow_5",
+        "source": "P1_Task_verify",
+        "target": "P1_EndEvent_e1"
+      }
+    ]
+  },
+  "baseOracle": [
+    {
+      "requirementId": "R1",
+      "status": "pass",
+      "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+      "mappedTaskIds": [
+        "P1_Task_register",
+        "P1_Task_verify",
+        "P1_Task_dispatch"
+      ],
+      "completePaths": 1,
+      "witness": null,
+      "pathWitnesses": [
+        {
+          "nodes": [
+            "P1_StartEvent_s1",
+            "P1_Gateway_g_case",
+            "P1_Task_register",
+            "P1_Task_verify",
+            "P1_Task_dispatch",
+            "P1_EndEvent_e1"
+          ],
+          "flows": [
+            "P1_Flow_1",
+            "P1_Flow_2",
+            "P1_Flow_3",
+            "P1_Flow_4",
+            "P1_Flow_5"
+          ],
+          "edgeReplayVerified": true
+        }
+      ]
+    },
+    {
+      "requirementId": "R2",
+      "status": "pass",
+      "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+      "mappedTaskIds": [
+        "P1_Task_dispatch",
+        "P1_Task_verify"
+      ],
+      "completePaths": 1,
+      "witness": null,
+      "pathWitnesses": [
+        {
+          "nodes": [
+            "P1_StartEvent_s1",
+            "P1_Gateway_g_case",
+            "P1_Task_register",
+            "P1_Task_verify",
+            "P1_Task_dispatch",
+            "P1_EndEvent_e1"
+          ],
+          "flows": [
+            "P1_Flow_1",
+            "P1_Flow_2",
+            "P1_Flow_3",
+            "P1_Flow_4",
+            "P1_Flow_5"
+          ],
+          "edgeReplayVerified": true
+        }
+      ]
+    }
+  ],
+  "mutantOracle": [
+    {
+      "requirementId": "R1",
+      "status": "fail",
+      "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+      "mappedTaskIds": [
+        "P1_Task_register",
+        "P1_Task_verify",
+        "P1_Task_dispatch"
+      ],
+      "completePaths": 1,
+      "witness": {
+        "nodes": [
+          "P1_StartEvent_s1",
+          "P1_Gateway_g_case",
+          "P1_Task_register",
+          "P1_Task_dispatch",
+          "P1_Task_verify",
+          "P1_EndEvent_e1"
+        ],
+        "flows": [
+          "P1_Flow_1",
+          "P1_Flow_2",
+          "P1_Flow_3",
+          "P1_Flow_4",
+          "P1_Flow_5"
+        ],
+        "edgeReplayVerified": true
+      },
+      "pathWitnesses": [
+        {
+          "nodes": [
+            "P1_StartEvent_s1",
+            "P1_Gateway_g_case",
+            "P1_Task_register",
+            "P1_Task_dispatch",
+            "P1_Task_verify",
+            "P1_EndEvent_e1"
+          ],
+          "flows": [
+            "P1_Flow_1",
+            "P1_Flow_2",
+            "P1_Flow_3",
+            "P1_Flow_4",
+            "P1_Flow_5"
+          ],
+          "edgeReplayVerified": true
+        }
+      ]
+    },
+    {
+      "requirementId": "R2",
+      "status": "fail",
+      "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+      "mappedTaskIds": [
+        "P1_Task_dispatch",
+        "P1_Task_verify"
+      ],
+      "completePaths": 1,
+      "witness": {
+        "nodes": [
+          "P1_StartEvent_s1",
+          "P1_Gateway_g_case",
+          "P1_Task_register",
+          "P1_Task_dispatch",
+          "P1_Task_verify",
+          "P1_EndEvent_e1"
+        ],
+        "flows": [
+          "P1_Flow_1",
+          "P1_Flow_2",
+          "P1_Flow_3",
+          "P1_Flow_4",
+          "P1_Flow_5"
+        ],
+        "edgeReplayVerified": true
+      },
+      "pathWitnesses": [
+        {
+          "nodes": [
+            "P1_StartEvent_s1",
+            "P1_Gateway_g_case",
+            "P1_Task_register",
+            "P1_Task_dispatch",
+            "P1_Task_verify",
+            "P1_EndEvent_e1"
+          ],
+          "flows": [
+            "P1_Flow_1",
+            "P1_Flow_2",
+            "P1_Flow_3",
+            "P1_Flow_4",
+            "P1_Flow_5"
+          ],
+          "edgeReplayVerified": true
+        }
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "status": "fail",
+      "runs": [
+        {
+          "tier": "light",
+          "variant": "P0",
+          "model": "meta-llama/llama-3.1-8b-instruct",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "unknown",
+              "explanation": "Missing, duplicated or invalid model assessment; no conclusion.",
+              "evidence": []
+            },
+            {
+              "requirementId": "R2",
+              "status": "fail",
+              "explanation": "The process reaches Dispatch order without previously executing Verify order. The sequence flow P1_Flow_3 connects Register order to Dispatch order, and P1_Flow_4 connects Dispatch order to Verify order. This means that Dispatch order can occur before Verify order. Evidence: P1_Flow_3, P1_Flow_4, P1_Task_register, P1_Task_dispatch, P1_Task_dispatch_di, P1_Flow_3_di.",
+              "evidence": [
+                "P1_Flow_3",
+                "P1_Flow_4",
+                "P1_Task_register",
+                "P1_Task_dispatch",
+                "P1_Task_dispatch_di",
+                "P1_Flow_3_di"
+              ]
+            }
+          ],
+          "status": "fail",
+          "error": "Invalid or missing assessments: R1",
+          "inputTokens": 2073,
+          "outputTokens": 340,
+          "costUsd": 0.00005506,
+          "reasoningTokens": 0,
+          "latencyMs": 15555,
+          "provider": "DeepInfra",
+          "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P0"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single light checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    },
+    {
+      "status": "unknown",
+      "runs": [
+        {
+          "tier": "light",
+          "variant": "P1",
+          "model": "meta-llama/llama-3.1-8b-instruct",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "unknown",
+              "explanation": "OpenRouter returned unreadable JSON (HTTP 200).",
+              "evidence": []
+            },
+            {
+              "requirementId": "R2",
+              "status": "unknown",
+              "explanation": "OpenRouter returned unreadable JSON (HTTP 200).",
+              "evidence": []
+            }
+          ],
+          "status": "unknown",
+          "error": "OpenRouter returned unreadable JSON (HTTP 200).",
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "costUsd": null,
+          "latencyMs": 45009,
+          "provider": null,
+          "effectiveModel": null,
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P1"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single light checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    },
+    {
+      "status": "pass",
+      "runs": [
+        {
+          "tier": "light",
+          "variant": "P2",
+          "model": "meta-llama/llama-3.1-8b-instruct",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "pass",
+              "explanation": "The process contains the tasks in the correct order: Register order, then Verify order, then Dispatch order, then ends.",
+              "evidence": [
+                "P1_Task_register",
+                "P1_Task_verify",
+                "P1_Task_dispatch",
+                "P1_EndEvent_e1"
+              ]
+            },
+            {
+              "requirementId": "R2",
+              "status": "pass",
+              "explanation": "The process ensures that Dispatch order never occurs before Verify order by having Verify order after Dispatch order in the sequence.",
+              "evidence": [
+                "P1_Flow_4",
+                "P1_Flow_3",
+                "P1_Flow_2"
+              ]
+            }
+          ],
+          "status": "pass",
+          "error": null,
+          "inputTokens": 2175,
+          "outputTokens": 132,
+          "costUsd": 0.00004878,
+          "reasoningTokens": 0,
+          "latencyMs": 6578,
+          "provider": "DeepInfra",
+          "effectiveModel": "meta-llama/llama-3.1-8b-instruct",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P2"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single light checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    },
+    {
+      "status": "fail",
+      "runs": [
+        {
+          "tier": "strong",
+          "variant": "P0",
+          "model": "qwen/qwen3-32b",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "fail",
+              "explanation": "The process sequence does not follow the required order of Register order → Verify order → Dispatch order. Instead, the flow is Register order → Dispatch order → Verify order.",
+              "evidence": [
+                "P1_Task_register → P1_Task_dispatch (P1_Flow_3)",
+                "P1_Task_dispatch → P1_Task_verify (P1_Flow_4)"
+              ]
+            },
+            {
+              "requirementId": "R2",
+              "status": "fail",
+              "explanation": "Dispatch order occurs before Verify order in the process flow, violating the requirement that Dispatch order must never occur before Verify order.",
+              "evidence": [
+                "P1_Task_register → P1_Task_dispatch (P1_Flow_3)",
+                "P1_Task_dispatch → P1_Task_verify (P1_Flow_4)"
+              ]
+            }
+          ],
+          "status": "fail",
+          "error": null,
+          "inputTokens": 2186,
+          "outputTokens": 215,
+          "costUsd": 0.00023508,
+          "reasoningTokens": 0,
+          "latencyMs": 3582,
+          "provider": "DeepInfra",
+          "effectiveModel": "qwen/qwen3-32b",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P0"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single strong checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    },
+    {
+      "status": "fail",
+      "runs": [
+        {
+          "tier": "strong",
+          "variant": "P1",
+          "model": "qwen/qwen3-32b",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "fail",
+              "explanation": "The sequence of activities is not correct. The flow goes from Register order to Dispatch order to Verify order, which violates the requirement that Verify order must occur before Dispatch order.",
+              "evidence": [
+                "P1_Task_register",
+                "P1_Task_dispatch",
+                "P1_Task_verify"
+              ]
+            },
+            {
+              "requirementId": "R2",
+              "status": "fail",
+              "explanation": "Dispatch order occurs before Verify order in the process flow, which violates the requirement that Dispatch order must never occur before Verify order.",
+              "evidence": [
+                "P1_Task_dispatch",
+                "P1_Task_verify"
+              ]
+            }
+          ],
+          "status": "fail",
+          "error": null,
+          "inputTokens": 2254,
+          "outputTokens": 126,
+          "costUsd": 0.0002156,
+          "reasoningTokens": 0,
+          "latencyMs": 4059,
+          "provider": "DeepInfra",
+          "effectiveModel": "qwen/qwen3-32b",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P1"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single strong checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    },
+    {
+      "status": "fail",
+      "runs": [
+        {
+          "tier": "strong",
+          "variant": "P2",
+          "model": "qwen/qwen3-32b",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "fail",
+              "explanation": "The sequence of activities is not strictly Register order → Verify order → Dispatch order. The flow goes from Register order to Dispatch order, then to Verify order, violating the required order.",
+              "evidence": [
+                "P1_Task_register",
+                "P1_Task_dispatch",
+                "P1_Task_verify",
+                "P1_Flow_3",
+                "P1_Flow_4"
+              ]
+            },
+            {
+              "requirementId": "R2",
+              "status": "fail",
+              "explanation": "Dispatch order occurs before Verify order in the process flow, which is explicitly forbidden.",
+              "evidence": [
+                "P1_Task_dispatch",
+                "P1_Task_verify",
+                "P1_Flow_3",
+                "P1_Flow_4"
+              ]
+            }
+          ],
+          "status": "fail",
+          "error": null,
+          "inputTokens": 2288,
+          "outputTokens": 190,
+          "costUsd": 0.00023624,
+          "reasoningTokens": 0,
+          "latencyMs": 7767,
+          "provider": "DeepInfra",
+          "effectiveModel": "qwen/qwen3-32b",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P2"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single strong checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "44f03049b2de80f7576d857a302489a4b0dd5aa7bb5bfe3637c801bfcb278593"
+    }
+  ],
+  "repair": {
+    "proposal": {
+      "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" id=\"Definitions_1\" targetNamespace=\"http://text2bpmn.app/bpmn\" exporter=\"text2BPMN\" exporterVersion=\"1.0\">\n  <bpmn:process id=\"P1_Process_1\" name=\"Order Processing\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"P1_StartEvent_s1\" name=\"Order received\">\n      <bpmn:outgoing>P1_Flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:exclusiveGateway id=\"P1_Gateway_g_case\" name=\"Which case?\">\n      <bpmn:incoming>P1_Flow_1</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_2</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"P1_Task_register\" name=\"Register order\">\n      <bpmn:incoming>P1_Flow_2</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_3</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_verify\" name=\"Verify order\">\n      <bpmn:incoming>P1_Flow_3</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_4</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"P1_Task_dispatch\" name=\"Dispatch order\">\n      <bpmn:incoming>P1_Flow_4</bpmn:incoming>\n      <bpmn:outgoing>P1_Flow_5</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"P1_EndEvent_e1\" name=\"Order Completed\">\n      <bpmn:incoming>P1_Flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"P1_Flow_1\" sourceRef=\"P1_StartEvent_s1\" targetRef=\"P1_Gateway_g_case\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_2\" sourceRef=\"P1_Gateway_g_case\" targetRef=\"P1_Task_register\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_3\" sourceRef=\"P1_Task_register\" targetRef=\"P1_Task_verify\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_4\" sourceRef=\"P1_Task_verify\" targetRef=\"P1_Task_dispatch\" />\n    <bpmn:sequenceFlow id=\"P1_Flow_5\" sourceRef=\"P1_Task_dispatch\" targetRef=\"P1_EndEvent_e1\" />\n  </bpmn:process>\n  <bpmndi:BPMNDiagram id=\"P1_BPMNDiagram_1\">\n    <bpmndi:BPMNPlane id=\"P1_BPMNPlane_1\" bpmnElement=\"P1_Process_1\">\n      <bpmndi:BPMNShape id=\"P1_StartEvent_s1_di\" bpmnElement=\"P1_StartEvent_s1\">\n        <dc:Bounds x=\"84\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"57\" y=\"146\" width=\"90\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Gateway_g_case_di\" bpmnElement=\"P1_Gateway_g_case\">\n        <dc:Bounds x=\"200\" y=\"99\" width=\"50\" height=\"50\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"190\" y=\"153\" width=\"70\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_register_di\" bpmnElement=\"P1_Task_register\">\n        <dc:Bounds x=\"330\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_verify_di\" bpmnElement=\"P1_Task_verify\">\n        <dc:Bounds x=\"558\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_Task_dispatch_di\" bpmnElement=\"P1_Task_dispatch\">\n        <dc:Bounds x=\"786\" y=\"84\" width=\"148\" height=\"80\" />\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"P1_EndEvent_e1_di\" bpmnElement=\"P1_EndEvent_e1\">\n        <dc:Bounds x=\"1014\" y=\"106\" width=\"36\" height=\"36\" />\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"984\" y=\"146\" width=\"96\" height=\"14\" />\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"P1_Flow_1_di\" bpmnElement=\"P1_Flow_1\">\n        <di:waypoint x=\"102\" y=\"124\" />\n        <di:waypoint x=\"225\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_2_di\" bpmnElement=\"P1_Flow_2\">\n        <di:waypoint x=\"225\" y=\"124\" />\n        <di:waypoint x=\"404\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_3_di\" bpmnElement=\"P1_Flow_3\">\n        <di:waypoint x=\"404\" y=\"124\" />\n        <di:waypoint x=\"632\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_4_di\" bpmnElement=\"P1_Flow_4\">\n        <di:waypoint x=\"632\" y=\"124\" />\n        <di:waypoint x=\"860\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"P1_Flow_5_di\" bpmnElement=\"P1_Flow_5\">\n        <di:waypoint x=\"860\" y=\"124\" />\n        <di:waypoint x=\"1032\" y=\"124\" />\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>",
+      "note": "Corrected sequence flow to enforce Register → Verify → Dispatch order. Adjusted BPMNDI layout to reflect new flow. Remaining uncertainty: untrusted findings may have misattributed original flow.",
+      "model": "qwen/qwen3-32b",
+      "verified": false,
+      "usage": {
+        "inputTokens": 2289,
+        "outputTokens": 1918,
+        "costUsd": 0.00072016,
+        "reasoningTokens": 0,
+        "latencyMs": 38745,
+        "provider": "DeepInfra"
+      }
+    },
+    "proposalSha256": "c72398f2661b3e87387be5edcce369526399d40ddd4ad44a8dc0b1cbf481a1ec",
+    "oracle": [
+      {
+        "requirementId": "R1",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_register",
+          "P1_Task_verify",
+          "P1_Task_dispatch"
+        ],
+        "completePaths": 1,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_case",
+              "P1_Task_register",
+              "P1_Task_verify",
+              "P1_Task_dispatch",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_3",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      },
+      {
+        "requirementId": "R2",
+        "status": "pass",
+        "reason": "All complete paths enumerated under published sequential/XOR assumptions; not whole-model or text-interpretation correctness.",
+        "mappedTaskIds": [
+          "P1_Task_dispatch",
+          "P1_Task_verify"
+        ],
+        "completePaths": 1,
+        "witness": null,
+        "pathWitnesses": [
+          {
+            "nodes": [
+              "P1_StartEvent_s1",
+              "P1_Gateway_g_case",
+              "P1_Task_register",
+              "P1_Task_verify",
+              "P1_Task_dispatch",
+              "P1_EndEvent_e1"
+            ],
+            "flows": [
+              "P1_Flow_1",
+              "P1_Flow_2",
+              "P1_Flow_3",
+              "P1_Flow_4",
+              "P1_Flow_5"
+            ],
+            "edgeReplayVerified": true
+          }
+        ]
+      }
+    ],
+    "allOriginalSupportedPropertiesPass": true,
+    "scope": "Only these fixed supported properties are rechecked; no whole-process or global semantic certification, no automatic application.",
+    "strongRecheck": {
+      "status": "pass",
+      "runs": [
+        {
+          "tier": "strong",
+          "variant": "P2",
+          "model": "qwen/qwen3-32b",
+          "assessments": [
+            {
+              "requirementId": "R1",
+              "status": "pass",
+              "explanation": "The process contains the required sequence of activities: Register order (P1_Task_register), Verify order (P1_Task_verify), and Dispatch order (P1_Task_dispatch), in that order, connected by sequence flows P1_Flow_3, P1_Flow_4, and P1_Flow_5.",
+              "evidence": [
+                "P1_Task_register",
+                "P1_Task_verify",
+                "P1_Task_dispatch",
+                "P1_Flow_3",
+                "P1_Flow_4",
+                "P1_Flow_5"
+              ]
+            },
+            {
+              "requirementId": "R2",
+              "status": "pass",
+              "explanation": "The sequence flow P1_Flow_4 ensures that Verify order (P1_Task_verify) must occur before Dispatch order (P1_Task_dispatch), and there are no paths that bypass Verify order.",
+              "evidence": [
+                "P1_Task_verify",
+                "P1_Task_dispatch",
+                "P1_Flow_4"
+              ]
+            }
+          ],
+          "status": "pass",
+          "error": null,
+          "inputTokens": 2287,
+          "outputTokens": 199,
+          "costUsd": 0.00023868,
+          "reasoningTokens": 0,
+          "latencyMs": 6235,
+          "provider": "DeepInfra",
+          "effectiveModel": "qwen/qwen3-32b",
+          "protocolVersion": "source-linked-checker-v1",
+          "promptVersion": "source-linked-checker-v1:P2"
+        }
+      ],
+      "escalated": false,
+      "routingReason": "Single strong checker requested.",
+      "scope": "LLM judgment against provisional source-linked requirements; not a formal proof or an independent correctness label. Data guards, timers, messages and concurrency may remain unsupported. Cascade routing is an uncalibrated heuristic.",
+      "candidateFingerprint": "bbc63a65b3c9d728fc9681359a6585e2029615473346f3eb83b7cc895c96be9c"
+    }
+  }
+}
